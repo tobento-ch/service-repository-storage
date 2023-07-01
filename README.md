@@ -1043,6 +1043,7 @@ use Tobento\Service\Repository\Storage\Migration\RepositoryAction;
 use Tobento\Service\Repository\Storage\Migration\RepositoryDeleteAction;
 use Tobento\Service\Migration\MigrationInterface;
 use Tobento\Service\Migration\ActionsInterface;
+use Tobento\Service\Migration\Action;
 use Tobento\Service\Migration\Actions;
 
 class UserMigration implements MigrationInterface
@@ -1068,8 +1069,41 @@ class UserMigration implements MigrationInterface
      */
     public function install(): ActionsInterface
     {
+        // you might check if repository is supported for the action:
+        if (RepositoryAction::isSupportedRepository($this->userRepository)) {
+            // create action
+        }
+        
         return new Actions(
             new RepositoryAction(
+                repository: $this->userRepository,
+                description: 'User migration',
+                
+                // you might set items to be migrated
+                items: [
+                    ['email' => 'demo@example.com'],
+                ],
+            ),
+            
+            // you might use the newOrNull method
+            // if the defined repository is of any type.
+            // If it is an unsupported repository
+            // a Action\NullAction::class is created.
+            RepositoryAction::newOrNull(
+                repository: $this->userRepository,
+                description: 'User migration',
+                
+                // you might set items to be migrated
+                items: [
+                    ['email' => 'demo@example.com'],
+                ],
+            ),
+            
+            // you might use the newOrFail method
+            // if the defined repository is of any type.
+            // If it is an unsupported repository
+            // a Action\Fail::class is created.
+            RepositoryAction::newOrFail(
                 repository: $this->userRepository,
                 description: 'User migration',
                 
@@ -1088,8 +1122,31 @@ class UserMigration implements MigrationInterface
      */
     public function uninstall(): ActionsInterface
     {
+        // you might check if repository is supported for the action:
+        if (RepositoryDeleteAction::isSupportedRepository($this->userRepository)) {
+            // create action
+        }
+        
         return new Actions(
             new RepositoryDeleteAction(
+                repository: $this->userRepository,
+                description: 'User migration',
+            ),
+            
+            // you might use the newOrNull method
+            // if the defined repository is of any type.
+            // If it is an unsupported repository
+            // a Action\NullAction::class is created.
+            RepositoryDeleteAction::newOrNull(
+                repository: $this->userRepository,
+                description: 'User migration',
+            ),
+            
+            // you might use the newOrFail method
+            // if the defined repository is of any type.
+            // If it is an unsupported repository
+            // a Action\Fail::class is created.
+            RepositoryDeleteAction::newOrFail(
                 repository: $this->userRepository,
                 description: 'User migration',
             ),
