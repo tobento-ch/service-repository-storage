@@ -18,6 +18,7 @@ use Tobento\Service\Repository\Storage\Migration\RepositoryDeleteAction;
 use Tobento\Service\Repository\Storage\StorageRepository;
 use Tobento\Service\Repository\Storage\Column;
 use Tobento\Service\Migration\ActionInterface;
+use Tobento\Service\Migration\Action;
 use Tobento\Service\Storage\InMemoryStorage;
 
 /**
@@ -46,6 +47,49 @@ class RepositoryDeleteActionTest extends TestCase
         );
         
         $this->assertInstanceof(ActionInterface::class, $action);
+    }
+    
+    public function testNewOrNullMethod()
+    {
+        $action = RepositoryDeleteAction::newOrNull(
+            repository: $this->createRepository(),
+        );
+        
+        $this->assertInstanceof(ActionInterface::class, $action);
+    }
+    
+    public function testNewOrNullMethodReturnsNullActionIfUnsupportedRepo()
+    {
+        $action = RepositoryDeleteAction::newOrNull(
+            repository: 'invalid',
+        );
+        
+        $this->assertInstanceof(Action\NullAction::class, $action);
+    }
+    
+    public function testNewOrFailMethod()
+    {
+        $action = RepositoryDeleteAction::newOrFail(
+            repository: $this->createRepository(),
+        );
+        
+        $this->assertInstanceof(ActionInterface::class, $action);
+    }
+    
+    public function testNewOrFailMethodReturnsFailActionIfUnsupportedRepo()
+    {
+        $action = RepositoryDeleteAction::newOrFail(
+            repository: 'invalid',
+        );
+        
+        $this->assertInstanceof(Action\Fail::class, $action);
+    }
+    
+    public function testIsSupportedRepositoryMethod()
+    {
+        $this->assertTrue(RepositoryDeleteAction::isSupportedRepository(repository: $this->createRepository()));
+        
+        $this->assertFalse(RepositoryDeleteAction::isSupportedRepository(repository: 'invalid'));
     }
     
     public function testNameMethod()

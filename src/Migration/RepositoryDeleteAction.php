@@ -18,6 +18,7 @@ use Tobento\Service\Repository\Storage\StorageReadRepository;
 use Tobento\Service\Repository\Storage\StorageWriteRepository;
 use Tobento\Service\Repository\Storage\Database\SchemaTableFactory;
 use Tobento\Service\Migration\ActionInterface;
+use Tobento\Service\Migration\Action;
 use Tobento\Service\Migration\ActionFailedException;
 use Tobento\Service\Database\Storage\StorageDatabase;
 use Tobento\Service\Database\Storage\StorageDatabaseProcessor;
@@ -26,7 +27,7 @@ use Tobento\Service\Database\Processor\ProcessException;
 /**
  * RepositoryDeleteAction
  */
-class RepositoryDeleteAction implements ActionInterface
+final class RepositoryDeleteAction implements ActionInterface
 {
     /**
      * Create a new RepositoryDeleteAction.
@@ -38,6 +39,63 @@ class RepositoryDeleteAction implements ActionInterface
         protected StorageRepository|StorageReadRepository|StorageWriteRepository $repository,
         protected string $description = '',
     ) {}
+
+    /**
+     * Create a new instance or a NullAction if not supported.
+     *
+     * @param mixed $repository
+     * @param string $description A description of the action.
+     * @return ActionInterface
+     */
+    public static function newOrNull(
+        mixed $repository,
+        string $description = '',
+    ): ActionInterface {
+        
+        if (static::isSupportedRepository($repository)) {
+            return new static($repository, $description);
+        }
+        
+        return new Action\NullAction('Unsupported repository defined');
+    }
+    
+    /**
+     * Create a new instance or a Fail action if not supported.
+     *
+     * @param mixed $repository
+     * @param string $description A description of the action.
+     * @return ActionInterface
+     */
+    public static function newOrFail(
+        mixed $repository,
+        string $description = '',
+    ): ActionInterface {
+        
+        if (static::isSupportedRepository($repository)) {
+            return new static($repository, $description);
+        }
+        
+        return new Action\Fail('Unsupported repository defined');
+    }
+    
+    /**
+     * Returns true ifrepository is supported for action, otherwise false.
+     *
+     * @param mixed $repository
+     * @return bool
+     */
+    public static function isSupportedRepository(mixed $repository): bool
+    {
+        if (
+            $repository instanceof StorageRepository
+            || $repository instanceof StorageReadRepository
+            || $repository instanceof StorageWriteRepository
+        ) {
+            return true;
+        }
+        
+        return false;
+    }
     
     /**
      * Process the action.
