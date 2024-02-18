@@ -111,6 +111,16 @@ class RepositoryDeleteActionTest extends TestCase
         $this->assertSame('lorem', $action->description());
     }
     
+    public function testTypeMethod()
+    {
+        $action = new RepositoryDeleteAction(
+            repository: $this->createRepository(),
+            type: 'foo',
+        );
+        
+        $this->assertSame('foo', $action->type());
+    }
+    
     public function testProcessMethod()
     {
         $action = new RepositoryDeleteAction(

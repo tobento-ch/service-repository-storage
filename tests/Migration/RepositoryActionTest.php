@@ -111,6 +111,16 @@ class RepositoryActionTest extends TestCase
         $this->assertSame('lorem', $action->description());
     }
     
+    public function testTypeMethod()
+    {
+        $action = new RepositoryAction(
+            repository: $this->createRepository(),
+            type: 'foo',
+        );
+        
+        $this->assertSame('foo', $action->type());
+    }
+    
     public function testProcessMethod()
     {
         $action = new RepositoryAction(
