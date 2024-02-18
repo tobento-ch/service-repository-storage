@@ -35,11 +35,13 @@ final class RepositoryAction implements ActionInterface
      * @param StorageRepository|StorageReadRepository|StorageWriteRepository $repository
      * @param string $description A description of the action.
      * @param null|iterable $items Items to create.
+     * @param string $type A type of the action.
      */
     public function __construct(
         protected StorageRepository|StorageReadRepository|StorageWriteRepository $repository,
         protected string $description = '',
         protected null|iterable $items = null,
+        protected string $type = 'database',
     ) {}
     
     /**
@@ -48,16 +50,18 @@ final class RepositoryAction implements ActionInterface
      * @param mixed $repository
      * @param string $description A description of the action.
      * @param null|iterable $items Items to create.
+     * @param string $type A type of the action.
      * @return ActionInterface
      */
     public static function newOrNull(
         mixed $repository,
         string $description = '',
         null|iterable $items = null,
+        string $type = 'database',
     ): ActionInterface {
         
         if (static::isSupportedRepository($repository)) {
-            return new static($repository, $description, $items);
+            return new static($repository, $description, $items, $type);
         }
         
         return new Action\NullAction('Unsupported repository defined');
@@ -69,16 +73,18 @@ final class RepositoryAction implements ActionInterface
      * @param mixed $repository
      * @param string $description A description of the action.
      * @param null|iterable $items Items to create.
+     * @param string $type A type of the action.
      * @return ActionInterface
      */
     public static function newOrFail(
         mixed $repository,
         string $description = '',
         null|iterable $items = null,
+        string $type = 'database',
     ): ActionInterface {
         
         if (static::isSupportedRepository($repository)) {
-            return new static($repository, $description, $items);
+            return new static($repository, $description, $items, $type);
         }
         
         return new Action\Fail('Unsupported repository defined');
@@ -121,6 +127,16 @@ final class RepositoryAction implements ActionInterface
     public function description(): string
     {
         return $this->description;
+    }
+    
+    /**
+     * Returns the type of the action.
+     *
+     * @return string
+     */
+    public function type(): string
+    {
+        return $this->type;
     }
     
     /**

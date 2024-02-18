@@ -34,10 +34,12 @@ final class RepositoryDeleteAction implements ActionInterface
      *
      * @param StorageRepository|StorageReadRepository|StorageWriteRepository $repository
      * @param string $description A description of the action.
+     * @param string $type A type of the action.
      */
     public function __construct(
         protected StorageRepository|StorageReadRepository|StorageWriteRepository $repository,
         protected string $description = '',
+        protected string $type = 'database',
     ) {}
 
     /**
@@ -45,15 +47,17 @@ final class RepositoryDeleteAction implements ActionInterface
      *
      * @param mixed $repository
      * @param string $description A description of the action.
+     * @param string $type A type of the action.
      * @return ActionInterface
      */
     public static function newOrNull(
         mixed $repository,
         string $description = '',
+        string $type = 'database',
     ): ActionInterface {
         
         if (static::isSupportedRepository($repository)) {
-            return new static($repository, $description);
+            return new static($repository, $description, $type);
         }
         
         return new Action\NullAction('Unsupported repository defined');
@@ -64,15 +68,17 @@ final class RepositoryDeleteAction implements ActionInterface
      *
      * @param mixed $repository
      * @param string $description A description of the action.
+     * @param string $type A type of the action.
      * @return ActionInterface
      */
     public static function newOrFail(
         mixed $repository,
         string $description = '',
+        string $type = 'database',
     ): ActionInterface {
         
         if (static::isSupportedRepository($repository)) {
-            return new static($repository, $description);
+            return new static($repository, $description, $type);
         }
         
         return new Action\Fail('Unsupported repository defined');
@@ -144,6 +150,16 @@ final class RepositoryDeleteAction implements ActionInterface
     public function description(): string
     {
         return $this->description;
+    }
+    
+    /**
+     * Returns the type of the action.
+     *
+     * @return string
+     */
+    public function type(): string
+    {
+        return $this->type;
     }
     
     /**
