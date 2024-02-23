@@ -171,8 +171,8 @@ class Columns implements ColumnsInterface
      */
     public function processReading(array $attributes): array
     {
-        foreach($attributes as $name => $value) {            
-            if (is_null($column = $this->get(name: $name))) {
+        foreach($attributes as $name => $value) {
+            if (!is_string($name) || is_null($column = $this->get(name: $name))) {
                 continue;
             }
             
@@ -191,7 +191,7 @@ class Columns implements ColumnsInterface
     public function processWriting(array $attributes): array
     {
         foreach($attributes as $name => $value) {            
-            if (is_null($column = $this->get(name: $name))) {
+            if (!is_string($name) || is_null($column = $this->get(name: $name))) {
                 continue;
             }
             
