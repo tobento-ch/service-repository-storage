@@ -80,6 +80,10 @@ final class Datetime extends AbstractColumn
             return ($this->writer)($value, $attributes, $this->dateFormatter());
         }
         
+        if (is_null($value) && $this->getType()->get('nullable') === true) {
+            return null;
+        }
+        
         switch ($this->getType()->type()) {
             case 'date':
                 return $this->dateFormatter()->format(value: $value, format: 'Y-m-d');
