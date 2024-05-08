@@ -58,6 +58,16 @@ final class Translatable extends AbstractColumn implements LocalesAware
     }
     
     /**
+     * Returns the subtype.
+     *
+     * @return string
+     */
+    public function getSubtype(): string
+    {
+        return $this->subtype;
+    }
+    
+    /**
      * Returns true if the attribute is a translatable, otherwise false.
      *
      * @return bool
