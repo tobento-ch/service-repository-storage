@@ -51,6 +51,12 @@ class TranslatableTest extends TestCase
         Column\Translatable::new(name: 'name', subtype: 'foo');
     }
     
+    public function testGetSubtypeMethod()
+    {
+        $this->assertSame('string', (Column\Translatable::new(name: 'name'))->getSubtype());
+        $this->assertSame('array', (Column\Translatable::new(name: 'name', subtype: 'array'))->getSubtype());
+    }
+    
     public function testReadingMethod()
     {
         $column = Column\Translatable::new(name: 'name');
