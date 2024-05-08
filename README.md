@@ -565,7 +565,7 @@ $repository = new ProductRepository(
         Column\Text::new('title')
             ->read(fn (string $value, array $attributes): string => ucfirst($value))
             ->write(fn (string $value, array $attributes): string => ucfirst($value)),
-        Column\Bool::new('active'),
+        Column\Boolean::new('active'),
     ],
 );
 ```
@@ -594,7 +594,7 @@ class ProductRepository extends StorageRepository
             Column\Text::new('title')
                 ->read(fn (string $value, array $attributes): string => ucfirst($value))
                 ->write(fn (string $value, array $attributes): string => ucfirst($value)),
-            Column\Bool::new('active'),
+            Column\Boolean::new('active'),
         ];
     }
 }
@@ -821,7 +821,7 @@ use Tobento\Service\Repository\Storage\Column\Json;
 
 $column = Json::new(name: 'name');
 
-$column = Integer::new(name: 'name')
+$column = Json::new(name: 'name')
     ->type(nullable: false, default: ['foo', 'bar']);
 ```
 
