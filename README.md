@@ -18,6 +18,7 @@
         - [Type](#type)
         - [Read](#read)
         - [Write](#write)
+        - [Force Writing](#force-writing)
         - [Storable](#storable)
     - [Columns](#columns)
         - [Boolean](#boolean)
@@ -564,7 +565,7 @@ $repository = new ProductRepository(
         Column\Text::new('sku'),
         Column\Text::new('title')
             ->read(fn (string $value, array $attributes): string => ucfirst($value))
-            ->write(fn (string $value, array $attributes): string => ucfirst($value)),
+            ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value)),
         Column\Boolean::new('active'),
     ],
 );
@@ -593,7 +594,7 @@ class ProductRepository extends StorageRepository
             Column\Text::new('sku'),
             Column\Text::new('title')
                 ->read(fn (string $value, array $attributes): string => ucfirst($value))
-                ->write(fn (string $value, array $attributes): string => ucfirst($value)),
+                ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value)),
             Column\Boolean::new('active'),
         ];
     }
@@ -648,16 +649,29 @@ The value is casted to its column type before being passed to the reader!
 
 ### Write
 
-You may use the write method to specify a writer (callable). The writer will automatically be called by the repository when attempting to write the value.
+You may use the write method to specify a writer (callable). The writer will automatically be called by the repository when attempting to write the value. The writer will only be called if the attribute exists on any write methods. If you you want the writer to be always called, check out the [Force Writing](#force-writing) section.
 
 ```php
 use Tobento\Service\Repository\Storage\Column\Text;
 
 $column = Text::new(name: 'name')
-    ->write(fn (string $value, array $attributes): string => ucfirst($value));
+    ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
+    // $action = the action name processed such as 'create' or 'update'
 ```
 
 The value is casted to its column type before being passed to the writer!
+
+### Force Writing
+
+You may use the ```forceWriting``` method to specify if you want to force writing, meaning the writer gets always called even if the attribute was not passed on any write methods.
+
+```php
+use Tobento\Service\Repository\Storage\Column\Text;
+
+$column = Text::new(name: 'name')
+    ->forceWriting()
+    ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
+```
 
 ### Storable
 
@@ -739,13 +753,33 @@ use Tobento\Service\Dater\DateFormatter;
 
 $column = Datetime::new(name: 'created_at');
 
-$write = fn (mixed $value, array $attributes, DateFormatter $df)
+$write = fn (mixed $value, array $attributes, string $action, DateFormatter $df)
     : string => $df->format(value: $value, format: 'H:i:s');
 
 $column = Datetime::new(name: 'created_at')->read($read);
 ```
 
 Check out the [Dater Service - DateFormatter](https://github.com/tobento-ch/service-dater#date-formatter) for more detail.
+
+**autoCreate**
+
+Use the ```autoCreate``` method if you want the date to be automatically created if no value was passed by any write methods.
+
+```php
+use Tobento\Service\Repository\Storage\Column\Datetime;
+
+$column = Datetime::new(name: 'created_at')->autoCreate();
+```
+
+**autoUpdate**
+
+Use the ```autoUpdate``` method if you want the date to be automatically updated if no value was passed by any write methods.
+
+```php
+use Tobento\Service\Repository\Storage\Column\Datetime;
+
+$column = Datetime::new(name: 'updated_at')->autoUpdate();
+```
 
 ### Float
 
@@ -856,13 +890,13 @@ $column = Translatable::new(name: 'name');
 $column = Translatable::new(name: 'name', subtype: 'string')
     ->type(nullable: false)
     ->read(fn (string $value, array $attributes, string $locale): string => strtoupper($value))
-    ->write(fn (string $value, array $attributes, string $locale): string => strtoupper($value));
+    ->write(fn (string $value, array $attributes, string $action, string $locale): string => strtoupper($value));
     
 // with array subtype:
 $column = Translatable::new(name: 'name', subtype: 'array')
     ->type(nullable: false)
     ->read(fn (array $value, array $attributes, string $locale): array => $value)
-    ->write(fn (array $value, array $attributes, string $locale): array => $value);
+    ->write(fn (array $value, array $attributes, string $action, string $locale): array => $value);
 ```
 
 **Read Attribute**
