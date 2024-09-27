@@ -32,7 +32,7 @@ trait WriteMethods
      */
     public function create(array $attributes): object
     {
-        $attributes = $this->columns()->processWriting($attributes);
+        $attributes = $this->columns()->processWriting(attributes: $attributes, action: 'create');
         
         return $this->entityFactory()->createEntityFromStorageItem(
             item: $this->query()->insert($attributes),
@@ -57,7 +57,7 @@ trait WriteMethods
             );
         }
         
-        $attributes = $this->columns()->processWriting($attributes);
+        $attributes = $this->columns()->processWriting(attributes: $attributes, action: 'update');
         
         $updatedItem = $this->query()
             ->where($primaryKey, '=', $id)
@@ -93,7 +93,7 @@ trait WriteMethods
      */
     public function update(array $where, array $attributes): iterable
     {
-        $attributes = $this->columns()->processWriting($attributes);
+        $attributes = $this->columns()->processWriting(attributes: $attributes, action: 'update');
         $query = $this->query();
         $query = $this->applyWhere($query, $where);
         
