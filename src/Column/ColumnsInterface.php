@@ -109,7 +109,8 @@ interface ColumnsInterface extends IteratorAggregate
      * Process writing attributes.
      *
      * @param array $attributes
+     * @param string $action The action name that was performed such as 'create' or 'update'.
      * @return array
      */
-    public function processWriting(array $attributes): array;
+    public function processWriting(array $attributes, string $action): array;
 }
