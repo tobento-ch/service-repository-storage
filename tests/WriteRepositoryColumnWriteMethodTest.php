@@ -33,7 +33,7 @@ abstract class WriteRepositoryColumnWriteMethodTest extends TestCase
             Column\Boolean::new('bool')
                 ->write(fn (bool $value, array $attributes): bool => !$value),
             Column\Datetime::new('datetime')
-                ->write(fn (mixed $value, array $attributes, DateFormatter $df): string => $df->format(value: $value, format: 'Y-m-d')),
+                ->write(fn (mixed $value, array $attributes, string $action, DateFormatter $df): string => $df->format(value: $value, format: 'Y-m-d')),
             Column\FloatCol::new('float')
                 ->write(fn (float $value, array $attributes): float => $value * -1),
             Column\Integer::new('int')
@@ -43,9 +43,9 @@ abstract class WriteRepositoryColumnWriteMethodTest extends TestCase
             Column\Text::new('text')
                 ->write(fn (string $value, array $attributes): string => ucfirst($value)),
             Column\Translatable::new('trans')
-                ->write(fn (string $value, array $attributes, string $locale): string => ucfirst($value)),
+                ->write(fn (string $value, array $attributes, string $action, string $locale): string => ucfirst($value)),
             Column\Translatable::new('trans_array', subtype: 'array')
-                ->write(fn (array $value, array $attributes, string $locale): array => ['color' => 'red']),
+                ->write(fn (array $value, array $attributes, string $action, string $locale): array => ['color' => 'red']),
         ];
     }
     

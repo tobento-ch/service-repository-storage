@@ -22,6 +22,11 @@ use InvalidArgumentException;
 final class Datetime extends AbstractColumn
 {
     /**
+     * @var bool
+     */
+    protected bool $autoCreate = false;
+    
+    /**
      * Create a new Datetime.
      *
      * @param string $name
@@ -49,6 +54,31 @@ final class Datetime extends AbstractColumn
     {
         return new static($name, $type);
     }
+
+    /**
+     * If to automatically create the date on writing if no value passed.
+     *
+     * @return static $this
+     */
+    public function autoCreate(): static
+    {
+        $this->forceWriting();
+        $this->type(nullable: false);
+        $this->autoCreate = true;
+        return $this;
+    }
+    
+    /**
+     * If to automatically update the date on writing if no value passed..
+     *
+     * @return static $this
+     */
+    public function autoUpdate(): static
+    {
+        $this->forceWriting();
+        $this->type(nullable: false);
+        return $this;
+    }
     
     /**
      * Read value. Might be used for casting.
@@ -72,18 +102,34 @@ final class Datetime extends AbstractColumn
      *
      * @param mixed $value
      * @param array $attributes
+     * @param string $action The action name that was performed such as 'create' or 'update'.
      * @return mixed
      */
-    public function writing(mixed $value, array $attributes): mixed
+    public function writing(mixed $value, array $attributes, string $action = ''): mixed
     {
+        if ($this->autoCreate && $action === 'create' && !isset($attributes[$this->name()])) {
+            return $this->formatDate('now');
+        }
+        
         if (is_callable($this->writer)) {
-            return ($this->writer)($value, $attributes, $this->dateFormatter());
+            return ($this->writer)($value, $attributes, $action, $this->dateFormatter());
         }
         
         if (is_null($value) && $this->getType()->get('nullable') === true) {
             return null;
         }
         
+        return $this->formatDate($value);
+    }
+
+    /**
+     * Returns the formatted date.
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function formatDate(mixed $value): mixed
+    {
         switch ($this->getType()->type()) {
             case 'date':
                 return $this->dateFormatter()->format(value: $value, format: 'Y-m-d');

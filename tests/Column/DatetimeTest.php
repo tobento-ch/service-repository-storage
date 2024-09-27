@@ -136,11 +136,34 @@ class DatetimeTest extends TestCase
     
     public function testWriteMethod()
     {
-        $writer = fn (mixed $value, array $attributes, DateFormatter $df)
+        $writer = fn (mixed $value, array $attributes, string $action, DateFormatter $df)
             : string => $df->format(value: $value, format: 'Y');
         
         $column = Column\Datetime::new(name: 'name')->write($writer);
         
         $this->assertSame('2023', $column->writing(value: '2023-11-25 10:09:08', attributes: []));
+    }
+    
+    public function testAutoCreateMethod()
+    {
+        $now = (new DateFormatter())->format(value: 'now', format: 'Y-m-d');
+        
+        $column = Column\Datetime::new(name: 'name', type: 'date')->autoCreate();
+        
+        $this->assertSame($now, $column->writing(value: '', attributes: [], action: 'create'));
+        $this->assertSame($now, $column->writing(value: '2023-11-25', attributes: [], action: 'create'));
+        $this->assertSame('2023-11-25', $column->writing(value: '2023-11-25', attributes: ['name' => '2023-11-25'], action: 'create'));
+        $this->assertSame('2023-11-25', $column->writing(value: '2023-11-25', attributes: [], action: 'update'));
+    }
+    
+    public function testAutoUpdateMethod()
+    {
+        $now = (new DateFormatter())->format(value: 'now', format: 'Y-m-d');
+        
+        $column = Column\Datetime::new(name: 'name', type: 'date')->autoUpdate();
+        
+        $this->assertSame($now, $column->writing(value: '', attributes: [], action: 'create'));
+        $this->assertSame($now, $column->writing(value: '', attributes: [], action: 'update'));
+        $this->assertSame('2023-11-25', $column->writing(value: '2023-11-25', attributes: [], action: 'update'));
     }
 }

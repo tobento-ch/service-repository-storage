@@ -128,9 +128,10 @@ final class Translatable extends AbstractColumn implements LocalesAware
      *
      * @param mixed $value
      * @param array $attributes
+     * @param string $action The action name that was performed such as 'create' or 'update'.
      * @return mixed
      */
-    public function writing(mixed $value, array $attributes): mixed
+    public function writing(mixed $value, array $attributes, string $action = ''): mixed
     {
         if (is_string($value)) {
             $value = [$this->getLocale() => $value];
@@ -148,7 +149,7 @@ final class Translatable extends AbstractColumn implements LocalesAware
             }
             
             if (is_callable($this->writer)) {
-                $value[$locale] = ($this->writer)($val, $attributes, $locale);
+                $value[$locale] = ($this->writer)($val, $attributes, $action, $locale);
             }
         }
 

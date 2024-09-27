@@ -178,12 +178,32 @@ class ColumnsTest extends TestCase
                 
         $this->assertSame(
             ['foo' => 'a'],
-            $columns->processWriting(attributes: ['foo' => 'a'])
+            $columns->processWriting(attributes: ['foo' => 'a'], action: 'name')
         );
         
         $this->assertSame(
             ['foo' => 'a', 'bar' => 'a'],
-            $columns->processWriting(attributes: ['foo' => 'a', 'bar' => 'a'])
+            $columns->processWriting(attributes: ['foo' => 'a', 'bar' => 'a'], action: 'name')
+        );
+    }
+
+    public function testProcessWritingMethodWithForcedColumn()
+    {
+        $columns = new Columns(
+            Column\Text::new('foo'),
+            Column\Text::new('bar')->forceWriting(),
+            Column\Text::new('baz')->write(fn () => 'value')->forceWriting(),
+            Column\Text::new('lorem')->type(default: 'ipsum')->forceWriting(),
+        );
+        
+        $this->assertSame(
+            ['bar' => '', 'baz' => 'value', 'lorem' => 'ipsum'],
+            $columns->processWriting(attributes: [], action: 'name')
+        );
+        
+        $this->assertSame(
+            ['bar' => 'a', 'baz' => 'value', 'lorem' => 'c'],
+            $columns->processWriting(attributes: ['bar' => 'a', 'baz' => 'b', 'lorem' => 'c'], action: 'name')
         );
     }
     
@@ -193,15 +213,15 @@ class ColumnsTest extends TestCase
             Column\Text::new('foo'),
             Column\Text::new('bar')->type(default: 'value'),
         );
-                
+        
         $this->assertSame(
             ['foo' => 'a', 'bar' => 'value'],
-            $columns->processWriting(attributes: ['foo' => 'a'])
+            $columns->processWriting(attributes: ['foo' => 'a'], action: 'name')
         );
         
         $this->assertSame(
             ['bar' => 'a'],
-            $columns->processWriting(attributes: ['bar' => 'a'])
+            $columns->processWriting(attributes: ['bar' => 'a'], action: 'name')
         );
     }
     
