@@ -36,6 +36,11 @@ abstract class AbstractColumn implements ColumnInterface
     /**
      * @var bool
      */
+    protected bool $forcedWriting = false;
+    
+    /**
+     * @var bool
+     */
     protected bool $storable = true;
     
     /**
@@ -160,17 +165,40 @@ abstract class AbstractColumn implements ColumnInterface
      *
      * @param mixed $value
      * @param array $attributes
+     * @param string $action The action name that was performed such as 'create' or 'update'.
      * @return mixed
      */
-    public function writing(mixed $value, array $attributes): mixed
+    public function writing(mixed $value, array $attributes, string $action = ''): mixed
     {
         $value = $this->getType()->cast(value: $value);
         
         if (is_callable($this->writer)) {
-            return ($this->writer)($value, $attributes);
+            return ($this->writer)($value, $attributes, $action);
         }
         
         return $value;
+    }
+
+    /**
+     * Set if writing should be forced.
+     *
+     * @param bool $force
+     * @return static $this
+     */
+    public function forceWriting(bool $force = true): static
+    {
+        $this->forcedWriting = $force;
+        return $this;
+    }
+    
+    /**
+     * Returns true if writing should be forced, otherwise false.
+     *
+     * @return bool
+     */
+    public function forcedWriting(): bool
+    {
+        return $this->forcedWriting;
     }
         
     /**

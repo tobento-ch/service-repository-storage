@@ -186,9 +186,10 @@ class Columns implements ColumnsInterface
      * Process writing attributes.
      *
      * @param array $attributes
+     * @param string $action The action name that was performed such as 'create' or 'update'.
      * @return array
      */
-    public function processWriting(array $attributes): array
+    public function processWriting(array $attributes, string $action): array
     {
         foreach($attributes as $name => $value) {            
             if (!is_string($name) || is_null($column = $this->get(name: $name))) {
@@ -202,12 +203,26 @@ class Columns implements ColumnsInterface
         $columns = $this->except(array_keys($attributes));
         
         foreach($columns as $column) {
+            if ($column->forcedWriting()) {
+                $attributes[$column->name()] = $column->writing(
+                    value: $column->getType()->get('default'),
+                    attributes: $attributes
+                );
+                continue;
+            }
+            
+            if ($column->getType()->has('default')) {
+                $attributes[$column->name()] = $column->getType()->get('default');
+            }
+        }
+        
+        /*foreach($columns as $column) {
             if (! $column->getType()->has('default')) {
                 continue;
             }
             
             $attributes[$column->name()] = $column->getType()->get('default');
-        }
+        }*/
         
         return $attributes;
     }

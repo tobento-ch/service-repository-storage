@@ -60,7 +60,15 @@ interface ColumnInterface
      *
      * @param mixed $value
      * @param array $attributes
+     * @param string $action The action name that was performed such as 'create' or 'update'.
      * @return mixed
      */
-    public function writing(mixed $value, array $attributes): mixed;
+    public function writing(mixed $value, array $attributes, string $action = ''): mixed;
+    
+    /**
+     * Returns true if writing should be forced, otherwise false.
+     *
+     * @return bool
+     */
+    public function forcedWriting(): bool;
 }
