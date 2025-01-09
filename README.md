@@ -484,6 +484,27 @@ $entities = $repository->findAll(where: [
 ]);
 ```
 
+**Or Clauses**
+
+To create or clauses add the ```or``` keyword before any operator:
+
+```php
+$entities = $repository->findAll(where: [
+    'title' => ['like' => '%foo%', 'or like' => '%bar%'],
+    
+    // or
+    'title' => ['like' => '%foo%'],
+    'price' => ['or >' => 1.5],
+    
+    // or using an array
+    'id' => ['in' => [2,5,6]],
+    [
+        'title' => ['or like' => '%foo%'],
+        'price' => ['or >' => 1.5],
+    ]
+]);
+```
+
 ## Storage Entity Factory
 
 You may create a custom entity factory to return custom entities by the [Storage Repository](#storage-repository), [Storage Read Repository](#storage-read-repository) or [Storage Write Repository](#storage-write-repository).
