@@ -40,6 +40,7 @@ abstract class ReadRepositoryTest extends TestCase
             Column\Json::new('options'),
             Column\Text::new('sku'),
             Column\Translatable::new('title'),
+            Column\Text::new('name'),
         ];
     }
     
@@ -204,6 +205,38 @@ abstract class ReadRepositoryTest extends TestCase
         $this->assertSame(null, $this->repository->findAll(where: ['price' => ['not in' => 'invalid']])->first()?->get('sku'));
         $this->assertSame(0, $this->repository->findAll(where: ['sku' => ['like' => '']])->count());
         $this->assertSame('scissors', $this->repository->findAll(where: ['options->color' => [[]]])->first()?->get('sku'));
+    }
+    
+    public function testFindAllMethodWhereParametersUsingOrClauses()
+    {
+        $this->writeRepository->create([
+            'sku' => 'scissors', 'price' => 1.2, 'name' => 'foo',
+        ]);
+        $this->writeRepository->create([
+            'sku' => 'pen', 'price' => 1.4, 'name' => 'bar',
+        ]);
+        $this->writeRepository->create([
+            'sku' => 'pencil', 'price' => 0.8, 'name' => 'baz',
+        ]);
+
+        $this->assertSame(2, $this->repository->findAll(where: ['sku' => ['like' => '%il%', 'or like' => '%ss%']])->count());
+        
+        $this->assertSame(1, $this->repository->findAll(
+            where: [
+                'sku' => ['=' => 'foo'],
+                'sku' => ['or like' => '%il%'],
+            ]
+        )->count());
+        
+        $this->assertSame(1, $this->repository->findAll(
+            where: [
+                'name' => ['=' => 'foo'],
+                [
+                    'sku' => ['or like' => '%il%'],
+                    'price' => ['=' => 1.2],
+                ],
+            ]
+        )->count());
     }
     
     public function testFindAllMethodOrderByParameter()
