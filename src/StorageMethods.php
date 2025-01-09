@@ -212,6 +212,21 @@ trait StorageMethods
         $translatableColumns = $this->columns->translatable()->column('name');
         
         foreach($where as $column => $value) {
+            if (!is_string($column) && is_array($value)) {
+                $boolean = $this->extractFirstBooleanFromWhereColumns($value);
+                
+                if ($boolean === 'or') {
+                    $storage->orWhere(function(StorageInterface $query) use ($value): void {
+                        $this->applyWhere($query, $value);
+                    });
+                    continue;
+                }
+                
+                $storage->where(function(StorageInterface $query) use ($value): void {
+                    $this->applyWhere($query, $value);
+                });
+                continue;
+            }
             
             if (!is_string($column)) {
                 continue;
@@ -225,19 +240,16 @@ trait StorageMethods
             }
             
             if (is_array($value) && !empty($value)) {
-                
                 foreach($value as $operator => $v) {
+                    [$operator, $boolean] = $this->parseOperator($operator);
+                    
                     // for ['null'] e.g.
-                    if (is_int($operator)) {
-                        $operator = $v;
+                    if (is_null($operator)) {
+                        $operator = is_string($v) ? $v : 'null';
                         $v = null;
                     }
                     
-                    if (!is_string($operator)) {
-                        $operator = '=';
-                    }
-                    
-                    $this->mapWhereClause($storage, $column->column(), $operator, $v);
+                    $this->mapWhereClause($storage, $column->column(), $operator, $boolean, $v);
                 }
             } else {
                 $storage->where($column->column(), '=', $value);
@@ -247,6 +259,55 @@ trait StorageMethods
         return $storage;
     }
 
+    /**
+     * Extract the first boolean from the where columns. 
+     *
+     * @param array $where
+     * @return string
+     */
+    protected function extractFirstBooleanFromWhereColumns(array $where): string
+    {
+        $columnName = array_key_first($where);
+
+        if (is_null($columnName)) {
+            return 'and';
+        }
+        
+        $clause = $where[$columnName];
+        
+        if (is_array($clause) && !empty($clause)) {
+            foreach(array_keys($clause) as $operator) {
+                $boolean = $this->parseOperator($operator)[1] ?? 'and';
+                return $boolean;
+            }
+        }
+        
+        return 'and';
+    }
+    
+    /**
+     * Parse operator. 
+     *
+     * @param mixed $operator
+     * @return array
+     */
+    protected function parseOperator(mixed $operator): array
+    {
+        if (is_int($operator)) {
+            return [null, 'and'];
+        }
+
+        if (!is_string($operator)) {
+            return ['=', 'and'];
+        }
+        
+        if (str_starts_with($operator, 'or ')) {
+            return [substr($operator, 3), 'or'];
+        }
+        
+        return [$operator, 'and'];
+    }
+    
     /**
      * Assignes locale to column. 
      *
@@ -273,6 +334,7 @@ trait StorageMethods
      * @param StorageInterface $storage
      * @param string $column
      * @param string $operator
+     * @param string $boolean
      * @param mixed $value
      * @return void
      */
@@ -280,6 +342,7 @@ trait StorageMethods
         StorageInterface $storage,
         string $column,
         string $operator,
+        string $boolean,
         mixed $value,
     ): void {
         switch ($operator) {
@@ -288,37 +351,73 @@ trait StorageMethods
                     $value = [];
                 }
                 
-                $storage->whereBetween($column, $value);
+                if ($boolean === 'or') {
+                    $storage->orWhereBetween($column, $value);
+                } else {
+                    $storage->whereBetween($column, $value);
+                }
                 return;
             case 'not between':
                 if (!is_array($value)) {
                     $value = [];
                 }
                 
-                $storage->whereNotBetween($column, $value);
+                if ($boolean === 'or') {
+                    $storage->orWhereNotBetween($column, $value);
+                } else {
+                    $storage->whereNotBetween($column, $value);
+                }
                 return;
             case 'null':
-                $storage->whereNull($column);
+                if ($boolean === 'or') {
+                    $storage->orWhereNull($column);
+                } else {
+                    $storage->whereNull($column);
+                }
                 return;
             case 'not null':
-                $storage->whereNotNull($column);
+                if ($boolean === 'or') {
+                    $storage->orWhereNotNull($column);
+                } else {
+                    $storage->whereNotNull($column);
+                }
                 return;
             case 'in':
-                $storage->whereIn($column, $value);
+                if ($boolean === 'or') {
+                    $storage->orWhereIn($column, $value);
+                } else {
+                    $storage->whereIn($column, $value);
+                }
                 return;
             case 'not in':
-                $storage->whereNotIn($column, $value);
+                if ($boolean === 'or') {
+                    $storage->orWhereNotIn($column, $value);
+                } else {
+                    $storage->whereNotIn($column, $value);
+                }
                 return;
             case 'contains':
-                $storage->whereJsonContains($column, $value);
+                if ($boolean === 'or') {
+                    $storage->orWhereJsonContains($column, $value);
+                } else {
+                    $storage->whereJsonContains($column, $value);
+                }
                 return;
             case 'contains key':
-                $storage->whereJsonContainsKey($column);
+                if ($boolean === 'or') {
+                    $storage->orWhereJsonContainsKey($column);
+                } else {
+                    $storage->whereJsonContainsKey($column);
+                }
                 return;
         }
         
         // storage will verify operators, so no need to!
-        $storage->where($column, $operator, $value);
+        if ($boolean === 'or') {
+            $storage->orWhere($column, $operator, $value);
+        } else {
+            $storage->where($column, $operator, $value);
+        }
     }
     
     /**
