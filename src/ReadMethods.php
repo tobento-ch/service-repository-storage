@@ -94,7 +94,7 @@ trait ReadMethods
         
         $query = $this->applyOrderBy($query, $orderBy);
         $query = $this->applyLimit($query, $limit);
-
+        
         return $this->createEntities(
             items: $query->get(),
         );
