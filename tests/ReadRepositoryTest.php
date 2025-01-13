@@ -292,5 +292,55 @@ abstract class ReadRepositoryTest extends TestCase
         $entities = $this->repository->findAll();
         
         $this->assertSame([0 => 1, 1 => 2], array_keys($entities->all()));
+    }
+    
+    public function testFindColumnMethod()
+    {
+        $this->assertSame([], $this->repository->findColumn('sku'));
+        
+        $this->writeRepository->create(['sku' => 'scissors', 'price' => 1.2]);
+        $this->writeRepository->create(['sku' => 'pen', 'price' => 1.4]);
+        
+        $this->assertSame(['scissors', 'pen'], $this->repository->findColumn('sku'));
+        $this->assertSame([], $this->repository->findColumn('unknown'));
+    }
+
+    public function testFindColumnMethodWithKey()
+    {
+        $this->writeRepository->create(['sku' => 'scissors', 'name' => 'Scissors']);
+        $this->writeRepository->create(['sku' => 'pen', 'name' => 'Pen']);
+        
+        $this->assertSame(['Scissors' => 'scissors', 'Pen' => 'pen'], $this->repository->findColumn(column: 'sku', key: 'name'));
+        $this->assertSame(['scissors', 'pen'], $this->repository->findColumn(column: 'sku', key: 'unknown'));
+    }
+    
+    public function testFindColumnMethodWhereParameters()
+    {
+        $this->writeRepository->create(['sku' => 'scissors', 'price' => 1.2]);
+        $this->writeRepository->create(['sku' => 'pencil', 'price' => 1.4]);
+        $this->writeRepository->create(['sku' => 'pen', 'price' => 1.6]);
+        
+        $this->assertSame(['pencil', 'pen'], $this->repository->findColumn(column: 'sku', where: ['price' => ['>' => 1.3]]));
+    }
+    
+    public function testFindColumnMethodOrderByParameter()
+    {
+        $this->writeRepository->create(['sku' => 'b']);
+        $this->writeRepository->create(['sku' => 'a']);
+        $this->writeRepository->create(['sku' => 'c']);
+        
+        $this->assertSame(['a', 'b', 'c'], $this->repository->findColumn(column: 'sku', orderBy: ['sku' => 'asc']));
+        $this->assertSame(['c', 'b', 'a'], $this->repository->findColumn(column: 'sku', orderBy: ['sku' => 'desc']));
+    }
+    
+    public function testFindColumnMethodLimitParameter()
+    {
+        $this->writeRepository->create(['sku' => 'a']);
+        $this->writeRepository->create(['sku' => 'b']);
+        $this->writeRepository->create(['sku' => 'c']);
+        
+        $this->assertSame(['a', 'b'], $this->repository->findColumn(column: 'sku', limit: 2));
+        $this->assertSame(['a', 'b'], $this->repository->findColumn(column: 'sku', limit: [2]));
+        $this->assertSame(['b', 'c'], $this->repository->findColumn(column: 'sku', limit: [2, 1]));
     }    
 }
