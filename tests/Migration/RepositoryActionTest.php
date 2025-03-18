@@ -151,4 +151,42 @@ class RepositoryActionTest extends TestCase
         
         $this->assertSame(1, $repository->count());
     }
+    
+    public function testProcessMethodWithItemsAndCreateItemsUsingBoolFalse()
+    {
+        $repository = $this->createRepository();
+        
+        $this->assertSame(0, $repository->count());
+        
+        $action = new RepositoryAction(
+            repository: $repository,
+            items: [
+                ['sku' => 'foo'],
+            ],
+            createItems: false,
+        );
+        
+        $action->process();
+        
+        $this->assertSame(0, $repository->count());
+    }
+    
+    public function testProcessMethodWithItemsAndCreateItemsUsingClosureReturningTrue()
+    {
+        $repository = $this->createRepository();
+        
+        $this->assertSame(0, $repository->count());
+        
+        $action = new RepositoryAction(
+            repository: $repository,
+            items: [
+                ['sku' => 'foo'],
+            ],
+            createItems: fn ($repo): bool => is_null($repo->findOne()),
+        );
+        
+        $action->process();
+        
+        $this->assertSame(1, $repository->count());
+    }
 }
