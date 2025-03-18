@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tobento\Service\Repository\Storage\Migration;
 
+use Closure;
 use Tobento\Service\Repository\Storage\StorageRepository;
 use Tobento\Service\Repository\Storage\StorageReadRepository;
 use Tobento\Service\Repository\Storage\StorageWriteRepository;
@@ -35,12 +36,14 @@ final class RepositoryAction implements ActionInterface
      * @param StorageRepository|StorageReadRepository|StorageWriteRepository $repository
      * @param string $description A description of the action.
      * @param null|iterable $items Items to create.
+     * @param bool|Closure $createItems
      * @param string $type A type of the action.
      */
     public function __construct(
         protected StorageRepository|StorageReadRepository|StorageWriteRepository $repository,
         protected string $description = '',
         protected null|iterable $items = null,
+        protected bool|Closure $createItems = true,
         protected string $type = 'database',
     ) {}
     
@@ -50,6 +53,7 @@ final class RepositoryAction implements ActionInterface
      * @param mixed $repository
      * @param string $description A description of the action.
      * @param null|iterable $items Items to create.
+     * @param bool|Closure $createItems
      * @param string $type A type of the action.
      * @return ActionInterface
      */
@@ -57,11 +61,12 @@ final class RepositoryAction implements ActionInterface
         mixed $repository,
         string $description = '',
         null|iterable $items = null,
+        bool|Closure $createItems = true,
         string $type = 'database',
     ): ActionInterface {
         
         if (static::isSupportedRepository($repository)) {
-            return new static($repository, $description, $items, $type);
+            return new static($repository, $description, $items, $createItems, $type);
         }
         
         return new Action\NullAction('Unsupported repository defined');
@@ -73,6 +78,7 @@ final class RepositoryAction implements ActionInterface
      * @param mixed $repository
      * @param string $description A description of the action.
      * @param null|iterable $items Items to create.
+     * @param bool|Closure $createItems
      * @param string $type A type of the action.
      * @return ActionInterface
      */
@@ -80,11 +86,12 @@ final class RepositoryAction implements ActionInterface
         mixed $repository,
         string $description = '',
         null|iterable $items = null,
+        bool|Closure $createItems = true,
         string $type = 'database',
     ): ActionInterface {
         
         if (static::isSupportedRepository($repository)) {
-            return new static($repository, $description, $items, $type);
+            return new static($repository, $description, $items, $createItems, $type);
         }
         
         return new Action\Fail('Unsupported repository defined');
@@ -205,8 +212,12 @@ final class RepositoryAction implements ActionInterface
             return;
         }
         
-        // create once:
-        if ($this->repository->findOne()) {
+        // check if items should be created:
+        if (is_callable($this->createItems)) {
+            $this->createItems = call_user_func($this->createItems, $this->repository);
+        }
+        
+        if ($this->createItems === false) {
             return;
         }
         
