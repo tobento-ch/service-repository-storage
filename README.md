@@ -1138,6 +1138,12 @@ class UserMigration implements MigrationInterface
                 items: [
                     ['email' => 'demo@example.com'],
                 ],
+
+                // you may set if items should be created using a boolean:
+                createItems: true, // default
+                
+                // or using a closure:
+                createItems: fn ($repo): bool => is_null($repo->findOne()),
             ),
             
             // you might use the newOrNull method
@@ -1152,6 +1158,8 @@ class UserMigration implements MigrationInterface
                 items: [
                     ['email' => 'demo@example.com'],
                 ],
+                
+                createItems: true, // default
             ),
             
             // you might use the newOrFail method
@@ -1166,6 +1174,8 @@ class UserMigration implements MigrationInterface
                 items: [
                     ['email' => 'demo@example.com'],
                 ],
+                
+                createItems: true, // default
             ),
         );
     }
