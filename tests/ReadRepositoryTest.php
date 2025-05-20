@@ -239,6 +239,24 @@ abstract class ReadRepositoryTest extends TestCase
         )->count());
     }
     
+    public function testFindAllMethodWhereParametersUsingMultipleLikeClauses()
+    {
+        $this->writeRepository->create([
+            'sku' => 'scissors', 'price' => 1.2, 'name' => 'foo',
+        ]);
+        $this->writeRepository->create([
+            'sku' => 'pen', 'price' => 1.4, 'name' => 'bar',
+        ]);
+        $this->writeRepository->create([
+            'sku' => 'pencil', 'price' => 0.8, 'name' => 'baz',
+        ]);
+
+        $this->assertSame(1, $this->repository->findAll(where: ['sku' => ['like' => ['pe%', '%il']]])->count());
+        $this->assertSame(2, $this->repository->findAll(where: ['sku' => ['not like' => ['penc%', '%il']]])->count());
+        $this->assertSame(1, $this->repository->findAll(where: ['sku' => ['or like' => ['il%', '%rs']]])->count());
+        $this->assertSame(2, $this->repository->findAll(where: ['sku' => ['or not like' => ['pe%', '%il']]])->count());
+    }
+    
     public function testFindAllMethodOrderByParameter()
     {
         $this->writeRepository->create(['sku' => 'b']);
