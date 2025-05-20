@@ -474,6 +474,11 @@ $entities = $repository->findAll(where: [
     'title' => ['like' => '%a%'],
     'title' => ['not like' => '%a%'],
     
+    // With multiple likes using an array
+    'title' => ['like' => ['a%', '%a']],
+    'title' => ['not like' => ['a%', '%a']],
+    'title' => ['or like' => ['a%', '%a']],
+    
     // Json specific:
     'options->color' => 'blue',
     
