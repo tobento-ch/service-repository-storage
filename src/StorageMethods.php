@@ -249,6 +249,17 @@ trait StorageMethods
                         $v = null;
                     }
                     
+                    // check for like operator with multiple values:
+                    if (
+                        is_array($v)
+                        && in_array($operator, ['like', 'or like', 'not like', 'or not like'])
+                    ) {
+                        foreach($v as $mv) {
+                            $this->mapWhereClause($storage, $column->column(), $operator, $boolean, $mv);
+                        }
+                        continue;
+                    }
+                    
                     $this->mapWhereClause($storage, $column->column(), $operator, $boolean, $v);
                 }
             } else {
@@ -256,6 +267,7 @@ trait StorageMethods
             }
         }
         
+        //echo '<pre>'; print_r($storage->table('users')->getQuery()); exit;
         return $storage;
     }
 
