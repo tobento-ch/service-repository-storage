@@ -86,4 +86,24 @@ class SchemaTableFactoryTest extends TestCase
 
         $this->assertInstanceof(Index::class, $table->getIndexes()['index_name'] ?? null);
     }
+    
+    public function testCreateTableFromColumnsMethodAddsIndexColumnIfNotExists()
+    {
+        $factory = new SchemaTableFactory();
+        
+        $table = $factory->createTableFromColumns(
+            tableName: 'products',
+            columns: new Columns(
+                Column\Id::new('id'),
+                Column\Integer::new('foo')
+                    ->type(
+                        unsigned: true,
+                        index: ['name' => 'index_name', 'unique' => true, 'primary' => true],
+                    ),
+            ),
+        );
+        
+        $index = $table->getIndexes()['index_name'] ?? null;
+        $this->assertSame(['foo'], $index?->getColumns());
+    }
 }
