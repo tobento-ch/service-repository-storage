@@ -207,7 +207,7 @@ class ColumnsTest extends TestCase
         );
     }
     
-    public function testProcessWritingMethodDefaultColumnValueGetsAdded()
+    public function testProcessWritingMethodDefaultColumnValueGetsAddedOnCreateAction()
     {
         $columns = new Columns(
             Column\Text::new('foo'),
@@ -216,14 +216,27 @@ class ColumnsTest extends TestCase
         
         $this->assertSame(
             ['foo' => 'a', 'bar' => 'value'],
-            $columns->processWriting(attributes: ['foo' => 'a'], action: 'name')
+            $columns->processWriting(attributes: ['foo' => 'a'], action: 'create')
         );
         
         $this->assertSame(
             ['bar' => 'a'],
-            $columns->processWriting(attributes: ['bar' => 'a'], action: 'name')
+            $columns->processWriting(attributes: ['bar' => 'a'], action: 'create')
         );
     }
+    
+    public function testProcessWritingMethodDefaultColumnValueGetsNotAddedOnUpdateAction()
+    {
+        $columns = new Columns(
+            Column\Text::new('foo'),
+            Column\Text::new('bar')->type(default: 'value'),
+        );
+        
+        $this->assertSame(
+            ['foo' => 'a'],
+            $columns->processWriting(attributes: ['foo' => 'a'], action: 'update')
+        );
+    }    
     
     public function testGetIteratorMethod()
     {
