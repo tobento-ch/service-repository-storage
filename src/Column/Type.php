@@ -51,6 +51,27 @@ class Type
     ];
     
     /**
+     * @var array
+     */
+    protected array $typesSupportsNullable = [
+        'int',
+        'tinyInt',
+        'bigInt',
+        'char',
+        'string',
+        'text',
+        'double',
+        'float',
+        'decimal',
+        'datetime',
+        'date',
+        'time',
+        'timestamp',
+        'json',
+        'array',
+    ];
+    
+    /**
      * Create a new Type.
      *
      * @param mixed ...$parameters
@@ -68,6 +89,12 @@ class Type
     public function isPrimary(): bool
     {
         if ($this->type() === 'primary' || $this->type() === 'bigPrimary') {
+            return true;
+        }
+        
+        $index = $this->get('index');
+        
+        if (is_array($index) && isset($index['primary']) && $index['primary'] === true) {
             return true;
         }
         
@@ -134,6 +161,15 @@ class Type
         
         if (is_null($castType)) {
             return $value;
+        }
+        
+        // may cast to null:
+        if (
+            (is_null($value) || $value === '')
+            && $this->get('nullable') === true
+            && in_array($type, $this->typesSupportsNullable)
+        ) {
+            return null;
         }
         
         switch ($castType) {
