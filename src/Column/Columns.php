@@ -211,18 +211,10 @@ class Columns implements ColumnsInterface
                 continue;
             }
             
-            if ($column->getType()->has('default')) {
+            if ($action === 'create' && $column->getType()->has('default')) {
                 $attributes[$column->name()] = $column->getType()->get('default');
             }
         }
-        
-        /*foreach($columns as $column) {
-            if (! $column->getType()->has('default')) {
-                continue;
-            }
-            
-            $attributes[$column->name()] = $column->getType()->get('default');
-        }*/
         
         return $attributes;
     }
