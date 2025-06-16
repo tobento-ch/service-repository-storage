@@ -115,7 +115,7 @@ final class Datetime extends AbstractColumn
             return ($this->writer)($value, $attributes, $action, $this->dateFormatter());
         }
         
-        if (is_null($value) && $this->getType()->get('nullable') === true) {
+        if (empty($value) && $this->getType()->get('nullable') === true) {
             return null;
         }
         
