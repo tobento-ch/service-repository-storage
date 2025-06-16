@@ -27,6 +27,7 @@ class TypeTest extends TestCase
         $this->assertFalse((new Type(type: 'text'))->isPrimary());
         $this->assertTrue((new Type(type: 'primary'))->isPrimary());
         $this->assertTrue((new Type(type: 'bigPrimary'))->isPrimary());
+        $this->assertTrue((new Type(type: 'string', index: ['primary' => true]))->isPrimary());
     }
     
     public function testTypeMethod()
@@ -68,6 +69,8 @@ class TypeTest extends TestCase
         $this->assertSame(0, (new Type(type: 'int'))->cast(value: ''));
         $this->assertSame(0, (new Type(type: 'int'))->cast(value: []));
         $this->assertSame(1, (new Type(type: 'int'))->cast(value: [], default: 1));
+        $this->assertNull((new Type(type: 'int', nullable: true))->cast(value: '', default: 1));
+        $this->assertNull((new Type(type: 'int', nullable: true))->cast(value: null, default: 1));
     }
     
     public function testCastMethodWithFloat()
@@ -76,14 +79,19 @@ class TypeTest extends TestCase
         $this->assertSame(0., (new Type(type: 'float'))->cast(value: ''));
         $this->assertSame(0., (new Type(type: 'float'))->cast(value: []));
         $this->assertSame(1.0, (new Type(type: 'float'))->cast(value: [], default: 1));
+        $this->assertNull((new Type(type: 'float', nullable: true))->cast(value: '', default: 1));
+        $this->assertNull((new Type(type: 'float', nullable: true))->cast(value: null, default: 1));
     }
     
     public function testCastMethodWithString()
     {
         $this->assertSame('foo', (new Type(type: 'string'))->cast(value: 'foo'));
+        $this->assertSame('', (new Type(type: 'string'))->cast(value: ''));
         $this->assertSame('1', (new Type(type: 'string'))->cast(value: 1));
         $this->assertSame('', (new Type(type: 'string'))->cast(value: []));
         $this->assertSame('foo', (new Type(type: 'string'))->cast(value: [], default: 'foo'));
+        $this->assertNull((new Type(type: 'string', nullable: true))->cast(value: '', default: 'foo'));
+        $this->assertNull((new Type(type: 'string', nullable: true))->cast(value: null, default: 'foo'));
     }
     
     public function testCastMethodWithBool()
@@ -93,6 +101,9 @@ class TypeTest extends TestCase
         $this->assertSame(false, (new Type(type: 'bool'))->cast(value: []));
         $this->assertSame(true, (new Type(type: 'bool'))->cast(value: 'string'));
         $this->assertSame(true, (new Type(type: 'bool'))->cast(value: [], default: true));
+        // cannot be nullable:
+        $this->assertSame(false, (new Type(type: 'bool', nullable: true))->cast(value: '', default: true));
+        $this->assertSame(true, (new Type(type: 'bool', nullable: true))->cast(value: null, default: true));
     }
     
     public function testCastMethodWithArray()
@@ -101,6 +112,8 @@ class TypeTest extends TestCase
         $this->assertSame([], (new Type(type: 'array'))->cast(value: 1));
         $this->assertSame([], (new Type(type: 'array'))->cast(value: 'foo'));
         $this->assertSame(['foo'], (new Type(type: 'array'))->cast(value: '1', default: ['foo']));
+        $this->assertNull((new Type(type: 'array', nullable: true))->cast(value: '', default: ['foo']));
+        $this->assertNull((new Type(type: 'array', nullable: true))->cast(value: null, default: ['foo']));
     }
     
     public function testCastMethodWithDatetime()
@@ -109,6 +122,8 @@ class TypeTest extends TestCase
         $this->assertSame('1', (new Type(type: 'datetime'))->cast(value: 1));
         $this->assertSame('', (new Type(type: 'datetime'))->cast(value: []));
         $this->assertSame('2023-11-25 00:00:00', (new Type(type: 'datetime'))->cast(value: [], default: '2023-11-25 00:00:00'));
+        $this->assertNull((new Type(type: 'datetime', nullable: true))->cast(value: '', default: '2023-11-25 00:00:00'));
+        $this->assertNull((new Type(type: 'datetime', nullable: true))->cast(value: null, default: '2023-11-25 00:00:00'));
     }
     
     public function testCastMethodWithDate()
@@ -117,6 +132,8 @@ class TypeTest extends TestCase
         $this->assertSame('1', (new Type(type: 'date'))->cast(value: 1));
         $this->assertSame('', (new Type(type: 'date'))->cast(value: []));
         $this->assertSame('2023-11-25', (new Type(type: 'date'))->cast(value: [], default: '2023-11-25'));
+        $this->assertNull((new Type(type: 'date', nullable: true))->cast(value: '', default: '2023-11-25'));
+        $this->assertNull((new Type(type: 'date', nullable: true))->cast(value: null, default: '2023-11-25'));
     }
     
     public function testCastMethodWithTime()
@@ -125,6 +142,8 @@ class TypeTest extends TestCase
         $this->assertSame('1', (new Type(type: 'time'))->cast(value: 1));
         $this->assertSame('', (new Type(type: 'time'))->cast(value: []));
         $this->assertSame('10:09:08', (new Type(type: 'time'))->cast(value: [], default: '10:09:08'));
+        $this->assertNull((new Type(type: 'time', nullable: true))->cast(value: '', default: '10:09:08'));
+        $this->assertNull((new Type(type: 'time', nullable: true))->cast(value: null, default: '10:09:08'));
     }
     
     public function testCastMethodWithTimestamp()
@@ -133,6 +152,8 @@ class TypeTest extends TestCase
         $this->assertSame('1', (new Type(type: 'timestamp'))->cast(value: 1));
         $this->assertSame('', (new Type(type: 'timestamp'))->cast(value: []));
         $this->assertSame('1272509157', (new Type(type: 'timestamp'))->cast(value: [], default: '1272509157'));
+        $this->assertNull((new Type(type: 'timestamp', nullable: true))->cast(value: '', default: '1272509157'));
+        $this->assertNull((new Type(type: 'timestamp', nullable: true))->cast(value: null, default: '1272509157'));
     }
     
     public function testCastMethodUsesSpecifiedTypeInstead()
