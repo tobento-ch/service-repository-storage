@@ -60,21 +60,6 @@ class SchemaTableFactory
     }
     
     /**
-     * Create tables from the repository.
-     *
-     * @param StorageRepository|StorageReadRepository|StorageWriteRepository $repository
-     * @return Table
-     */
-    /*public function createTableFromRepository(
-        StorageRepository|StorageReadRepository|StorageWriteRepository $repository
-    ): Table {
-        return $this->createTableFromColumns(
-            tableName: $repository->table(),
-            columns: $repository->columns(),
-        );
-    }*/
-    
-    /**
      * Create a new Table from the specified table name and columns.
      *
      * @param string $tableName
@@ -94,8 +79,8 @@ class SchemaTableFactory
             
             $table->addColumn($column);
             
-            if (is_array($index = $col->getType()->get('index')))
-            {
+            if (is_array($index = $col->getType()->get('index'))) {
+                $index['column'] ??= $col->name();
                 $index = $this->indexFactory->createIndexFromArray($index);
                 $table->addIndex($index);
             }
