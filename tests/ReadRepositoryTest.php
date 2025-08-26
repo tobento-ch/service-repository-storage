@@ -239,6 +239,26 @@ abstract class ReadRepositoryTest extends TestCase
         )->count());
     }
     
+    public function testFindAllMethodWhereParametersUsingOrNullClauses()
+    {
+        $this->writeRepository->create([
+            'sku' => 'scissors', 'name' => 'foo',
+        ]);
+        $this->writeRepository->create([
+            'name' => 'bar',
+        ]);
+        $this->writeRepository->create([
+            'sku' => 'pencil', 'name' => 'baz',
+        ]);
+        $this->writeRepository->create([
+            'sku' => 'lor', 'name' => 'lor',
+        ]);
+
+        $this->assertSame(2, $this->repository->findAll(where: ['sku' => ['=' => 'scissors', 'or null']])->count());
+        
+        $this->assertSame(3, $this->repository->findAll(where: ['sku' => ['=' => 'scissors', 'or not null']])->count());
+    }    
+    
     public function testFindAllMethodWhereParametersUsingMultipleLikeClauses()
     {
         $this->writeRepository->create([
