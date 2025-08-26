@@ -198,12 +198,37 @@ class ColumnsTest extends TestCase
         
         $this->assertSame(
             ['bar' => '', 'baz' => 'value', 'lorem' => 'ipsum'],
-            $columns->processWriting(attributes: [], action: 'name')
+            $columns->processWriting(attributes: [], action: 'create')
+        );
+        
+        $this->assertSame(
+            ['bar' => '', 'baz' => 'value', 'lorem' => 'ipsum'],
+            $columns->processWriting(attributes: [], action: 'update')
         );
         
         $this->assertSame(
             ['bar' => 'a', 'baz' => 'value', 'lorem' => 'c'],
             $columns->processWriting(attributes: ['bar' => 'a', 'baz' => 'b', 'lorem' => 'c'], action: 'name')
+        );
+    }
+    
+    public function testProcessWritingMethodWithForcedColumnSingleAction()
+    {
+        $columns = new Columns(
+            Column\Text::new('foo'),
+            Column\Text::new('bar')->type(nullable: true)->forceWriting(force: true, action: 'create'),
+            Column\Text::new('baz')->write(fn () => 'value')->forceWriting(force: true, action: 'create'),
+            Column\Text::new('lorem')->type(default: 'ipsum')->forceWriting(force: true, action: 'create'),
+        );
+        
+        $this->assertSame(
+            ['bar' => null, 'baz' => 'value', 'lorem' => 'ipsum'],
+            $columns->processWriting(attributes: [], action: 'create')
+        );
+        
+        $this->assertSame(
+            [],
+            $columns->processWriting(attributes: [], action: 'update')
         );
     }
     
@@ -235,6 +260,11 @@ class ColumnsTest extends TestCase
         $this->assertSame(
             ['foo' => 'a'],
             $columns->processWriting(attributes: ['foo' => 'a'], action: 'update')
+        );
+        
+        $this->assertSame(
+            [],
+            $columns->processWriting(attributes: [], action: 'update')
         );
     }    
     
