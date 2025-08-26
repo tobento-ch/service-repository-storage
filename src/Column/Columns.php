@@ -196,17 +196,18 @@ class Columns implements ColumnsInterface
                 continue;
             }
             
-            $attributes[$name] = $column->writing(value: $value, attributes: $attributes);
+            $attributes[$name] = $column->writing(value: $value, attributes: $attributes, action: $action);
         }
 
         // handle default parameter type:
         $columns = $this->except(array_keys($attributes));
         
         foreach($columns as $column) {
-            if ($column->forcedWriting()) {
+            if ($column->forcedWriting($action)) {
                 $attributes[$column->name()] = $column->writing(
                     value: $column->getType()->get('default'),
-                    attributes: $attributes
+                    attributes: $attributes,
+                    action: $action,
                 );
                 continue;
             }
