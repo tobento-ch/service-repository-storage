@@ -34,9 +34,9 @@ abstract class AbstractColumn implements ColumnInterface
     protected $writer = null;
     
     /**
-     * @var bool
+     * @var array<string, bool>
      */
-    protected bool $forcedWriting = false;
+    protected array $forcedWriting = [];
     
     /**
      * @var bool
@@ -183,22 +183,27 @@ abstract class AbstractColumn implements ColumnInterface
      * Set if writing should be forced.
      *
      * @param bool $force
+     * @param string $action E.g 'create' or 'update' or 'create|update'
      * @return static $this
      */
-    public function forceWriting(bool $force = true): static
+    public function forceWriting(bool $force = true, string $action = 'create|update'): static
     {
-        $this->forcedWriting = $force;
+        foreach(explode('|', $action) as $actionName) {
+            $this->forcedWriting[$actionName] = $force;
+        }
+
         return $this;
     }
     
     /**
-     * Returns true if writing should be forced, otherwise false.
+     * Returns true if writing should be forced for the given action, otherwise false.
      *
+     * @param string $action E.g 'create' or 'update'
      * @return bool
      */
-    public function forcedWriting(): bool
+    public function forcedWriting(string $action): bool
     {
-        return $this->forcedWriting;
+        return isset($this->forcedWriting[$action]);
     }
         
     /**
