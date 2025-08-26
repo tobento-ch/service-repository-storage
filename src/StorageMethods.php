@@ -241,11 +241,14 @@ trait StorageMethods
             
             if (is_array($value) && !empty($value)) {
                 foreach($value as $operator => $v) {
-                    [$operator, $boolean] = $this->parseOperator($operator);
+                    
+                    [$operator, $boolean] = $this->parseOperator($operator, $v);
                     
                     // for ['null'] e.g.
                     if (is_null($operator)) {
                         $operator = is_string($v) ? $v : 'null';
+                        $operator = $operator === 'or null' ? 'null' : $operator;
+                        $operator = $operator === 'or not null' ? 'not null' : $operator;
                         $v = null;
                     }
                     
@@ -259,7 +262,7 @@ trait StorageMethods
                         }
                         continue;
                     }
-                    
+
                     $this->mapWhereClause($storage, $column->column(), $operator, $boolean, $v);
                 }
             } else {
@@ -303,9 +306,12 @@ trait StorageMethods
      * @param mixed $operator
      * @return array
      */
-    protected function parseOperator(mixed $operator): array
+    protected function parseOperator(mixed $operator, mixed $value = null): array
     {
         if (is_int($operator)) {
+            if (is_string($value) && str_starts_with($value, 'or ')) {
+                return [null, 'or'];
+            }
             return [null, 'and'];
         }
 
