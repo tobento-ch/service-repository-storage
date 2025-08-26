@@ -66,9 +66,10 @@ interface ColumnInterface
     public function writing(mixed $value, array $attributes, string $action = ''): mixed;
     
     /**
-     * Returns true if writing should be forced, otherwise false.
+     * Returns true if writing should be forced for the given action, otherwise false.
      *
+     * @param string $action E.g 'create' or 'update'
      * @return bool
      */
-    public function forcedWriting(): bool;
+    public function forcedWriting(string $action): bool;
 }
