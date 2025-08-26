@@ -196,6 +196,7 @@ class DatetimeTest extends TestCase
         
         $this->assertSame($now, $column->writing(value: '', attributes: [], action: 'create'));
         $this->assertSame($now, $column->writing(value: '', attributes: [], action: 'update'));
-        $this->assertSame('2023-11-25', $column->writing(value: '2023-11-25', attributes: [], action: 'update'));
+        $this->assertSame('2023-11-25', $column->writing(value: '2023-11-25', attributes: ['name' => '2023-11-25'], action: 'update'));
+        $this->assertSame($now, $column->writing(value: '2023-11-25', attributes: [], action: 'update'));
     }
 }
