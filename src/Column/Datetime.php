@@ -27,6 +27,11 @@ final class Datetime extends AbstractColumn
     protected bool $autoCreate = false;
     
     /**
+     * @var bool
+     */
+    protected bool $autoUpdate = false;
+    
+    /**
      * Create a new Datetime.
      *
      * @param string $name
@@ -62,8 +67,7 @@ final class Datetime extends AbstractColumn
      */
     public function autoCreate(): static
     {
-        $this->forceWriting();
-        $this->type(nullable: false);
+        $this->forceWriting(action: 'create');
         $this->autoCreate = true;
         return $this;
     }
@@ -75,8 +79,8 @@ final class Datetime extends AbstractColumn
      */
     public function autoUpdate(): static
     {
-        $this->forceWriting();
-        $this->type(nullable: false);
+        $this->forceWriting(action: 'update');
+        $this->autoUpdate = true;
         return $this;
     }
     
@@ -108,6 +112,10 @@ final class Datetime extends AbstractColumn
     public function writing(mixed $value, array $attributes, string $action = ''): mixed
     {
         if ($this->autoCreate && $action === 'create' && !isset($attributes[$this->name()])) {
+            return $this->formatDate('now');
+        }
+        
+        if ($this->autoUpdate && $action === 'update' && !isset($attributes[$this->name()])) {
             return $this->formatDate('now');
         }
         
