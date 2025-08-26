@@ -695,7 +695,11 @@ You may use the ```forceWriting``` method to specify if you want to force writin
 use Tobento\Service\Repository\Storage\Column\Text;
 
 $column = Text::new(name: 'name')
-    ->forceWriting()
+    ->forceWriting(action: 'create|update')
+    ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
+
+$column = Text::new(name: 'name')
+    ->forceWriting(action: 'create')
     ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
 ```
 
