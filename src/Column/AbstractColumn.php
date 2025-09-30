@@ -52,10 +52,11 @@ abstract class AbstractColumn implements ColumnInterface
      * Returns the name.
      *
      * @return string
+     * @psalm-suppress UndefinedThisPropertyFetch
      */
     public function name(): string
     {
-        return $this->name;
+        return $this->name ?: '';
     }
 
     /**
