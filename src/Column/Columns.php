@@ -223,7 +223,7 @@ class Columns implements ColumnsInterface
     /**
      * Get iterator.
      *
-     * @return Traversable
+     * @return Traversable<string, ColumnInterface>
      */
     public function getIterator(): Traversable
     {

@@ -16,7 +16,7 @@ namespace Tobento\Service\Repository\Storage\Column;
 use IteratorAggregate;
 
 /**
- * ColumnsInterface
+ * @extends IteratorAggregate<string, ColumnInterface>
  */
 interface ColumnsInterface extends IteratorAggregate
 {
