@@ -343,7 +343,7 @@ trait StorageMethods
             return $column;
         }
         
-        return $column->withJsonSegments([$this->getLocale(), ...$column->jsonSegments()]);
+        return $column->withJsonSegments([$this->getLocale(), ...($column->jsonSegments() ?? [])]);
     }
     
     /**
