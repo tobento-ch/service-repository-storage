@@ -36,16 +36,4 @@ final class FloatCol extends AbstractColumn
         
         $this->type(type: $type);
     }
-    
-    /**
-     * Create a new instance.
-     *
-     * @param string $name
-     * @param string $type
-     * @return static
-     */
-    public static function new(string $name, string $type = 'float'): static
-    {
-        return new static($name, $type);
-    }
 }

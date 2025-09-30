@@ -30,15 +30,4 @@ final class Json extends AbstractColumn
     ) {
         $this->type(type: 'json');
     }
-    
-    /**
-     * Create a new instance.
-     *
-     * @param string $name
-     * @return static
-     */
-    public static function new(string $name): static
-    {
-        return new static($name);
-    }
 }

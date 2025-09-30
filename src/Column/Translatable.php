@@ -46,18 +46,6 @@ final class Translatable extends AbstractColumn implements LocalesAware
     }
     
     /**
-     * Create a new instance.
-     *
-     * @param string $name
-     * @param string $subtype
-     * @return static
-     */
-    public static function new(string $name, string $subtype = 'string'): static
-    {
-        return new static($name, $subtype);
-    }
-    
-    /**
      * Returns the subtype.
      *
      * @return string
