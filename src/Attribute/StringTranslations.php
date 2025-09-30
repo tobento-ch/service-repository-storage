@@ -22,7 +22,7 @@ use Stringable;
 use Generator;
 
 /**
- * StringTranslations
+ * @implements IteratorAggregate<string, string>
  */
 final class StringTranslations implements Arrayable, Jsonable, Stringable, IteratorAggregate
 {
