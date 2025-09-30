@@ -46,7 +46,7 @@ composer require tobento/service-repository-storage
 
 ## Requirements
 
-- PHP 8.0 or greater
+- PHP 8.4 or greater
 
 ## Highlights
 
@@ -82,7 +82,7 @@ class ProductRepository extends StorageRepository
 $repository = new ProductRepository(
     storage: new  InMemoryStorage(
         items: [],
-        tables: (new Tables())->add('products', ['id', 'sku', 'price'], 'id')
+        tables: new Tables()->add('products', ['id', 'sku', 'price'], 'id')
     ),
     table: 'products', // specify which storage table should be used.
     entityFactory: null, // null|StorageEntityFactoryInterface
@@ -133,7 +133,7 @@ $repository = new ProductReadRepository(
                 3 => ['id' => 3, 'sku' => 'pencil', 'price' => 1.5],
             ],
         ],
-        tables: (new Tables())->add('products', ['id', 'sku', 'price'], 'id')
+        tables: new Tables()->add('products', ['id', 'sku', 'price'], 'id')
     ),
     table: 'products',
     entityFactory: null, // null|StorageEntityFactoryInterface
@@ -296,7 +296,7 @@ $repository = new ProductWriteRepository(
                 3 => ['id' => 3, 'sku' => 'pencil', 'price' => 1.5],
             ],
         ],
-        tables: (new Tables())->add('products', ['id', 'sku', 'price'], 'id')
+        tables: new Tables()->add('products', ['id', 'sku', 'price'], 'id')
     ),
     table: 'products',
     entityFactory: null, // null|StorageEntityFactoryInterface
@@ -587,12 +587,12 @@ $repository = new ProductRepository(
     
     // specify the columns:
     columns: [
-        Column\Id::new(),
-        Column\Text::new('sku'),
-        Column\Text::new('title')
+        new Column\Id(),
+        new Column\Text('sku'),
+        new Column\Text('title')
             ->read(fn (string $value, array $attributes): string => ucfirst($value))
             ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value)),
-        Column\Boolean::new('active'),
+        new Column\Boolean('active'),
     ],
 );
 ```
@@ -616,12 +616,12 @@ class ProductRepository extends StorageRepository
     protected function configureColumns(): iterable|ColumnsInterface
     {
         return [
-            Column\Id::new(),
-            Column\Text::new('sku'),
-            Column\Text::new('title')
+            new Column\Id(),
+            new Column\Text('sku'),
+            new Column\Text('title')
                 ->read(fn (string $value, array $attributes): string => ucfirst($value))
                 ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value)),
-            Column\Boolean::new('active'),
+            new Column\Boolean('active'),
         ];
     }
 }
@@ -642,17 +642,17 @@ The parameters set on the ```type``` method are used for [Migration](#migration)
 use Tobento\Service\Repository\Storage\Column\Text;
 use Tobento\Service\Repository\Storage\Column\Int;
 
-$column = Text::new(name: 'name')
+$column = new Text(name: 'name')
     ->type(length: 150, nullable: false, default: 'foo', parameters: ['charset' => 'utf8mb4']);
     
-$column = Int::new(name: 'name')
+$column = new Int(name: 'name')
     ->type(
         length: 20,
         unsigned: true,
         index: ['name' => 'index_name', 'column' => 'name', 'unique' => true, 'primary' => true],
     );
     
-$column = Float::new(name: 'name', type: 'decimal')
+$column = new Float(name: 'name', type: 'decimal')
     ->type(precision: 10, scale: 0);
 ```
 
@@ -667,7 +667,7 @@ You may use the read method to specify a reader (callable). The reader will auto
 ```php
 use Tobento\Service\Repository\Storage\Column\Text;
 
-$column = Text::new(name: 'name')
+$column = new Text(name: 'name')
     ->read(fn (string $value, array $attributes): string => ucfirst($value));
 ```
 
@@ -680,7 +680,7 @@ You may use the write method to specify a writer (callable). The writer will aut
 ```php
 use Tobento\Service\Repository\Storage\Column\Text;
 
-$column = Text::new(name: 'name')
+$column = new Text(name: 'name')
     ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
     // $action = the action name processed such as 'create' or 'update'
 ```
@@ -694,11 +694,11 @@ You may use the ```forceWriting``` method to specify if you want to force writin
 ```php
 use Tobento\Service\Repository\Storage\Column\Text;
 
-$column = Text::new(name: 'name')
+$column = new Text(name: 'name')
     ->forceWriting(action: 'create|update')
     ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
 
-$column = Text::new(name: 'name')
+$column = new Text(name: 'name')
     ->forceWriting(action: 'create')
     ->write(fn (string $value, array $attributes, string $action): string => ucfirst($value));
 ```
@@ -708,7 +708,7 @@ $column = Text::new(name: 'name')
 ```php
 use Tobento\Service\Repository\Storage\Column\Text;
 
-$column = Text::new(name: 'name')
+$column = new Text(name: 'name')
     ->storable(false);
 ```
 
@@ -719,9 +719,9 @@ $column = Text::new(name: 'name')
 ```php
 use Tobento\Service\Repository\Storage\Column\Boolean;
 
-$column = Boolean::new(name: 'active');
+$column = new Boolean(name: 'active');
 
-$column = Boolean::new(name: 'active')
+$column = new Boolean(name: 'active')
     ->type(default: true);
 ```
 
@@ -730,22 +730,22 @@ $column = Boolean::new(name: 'active')
 ```php
 use Tobento\Service\Repository\Storage\Column\Datetime;
 
-$column = Datetime::new(name: 'created_at');
+$column = new Datetime(name: 'created_at');
 
 // with datetime type (default):
-$column = Datetime::new(name: 'created_at', type: 'datetime')
+$column = new Datetime(name: 'created_at', type: 'datetime')
     ->type(nullable: true);
 
 // with date type:
-$column = Datetime::new(name: 'created_at', type: 'date')
+$column = new Datetime(name: 'created_at', type: 'date')
     ->type(nullable: true);
 
 // with time type:
-$column = Datetime::new(name: 'created_time', type: 'time')
+$column = new Datetime(name: 'created_time', type: 'time')
     ->type(nullable: true);
 
 // with timestamp type:
-$column = Datetime::new(name: 'created_ts', type: 'timestamp')
+$column = new Datetime(name: 'created_ts', type: 'timestamp')
     ->type(nullable: true);
 ```
 
@@ -758,12 +758,12 @@ use Tobento\Service\Repository\Storage\Column\Datetime;
 use Tobento\Service\Dater\DateFormatter;
 use DateTimeImmutable;
 
-$column = Datetime::new(name: 'created_at');
+$column = new Datetime(name: 'created_at');
 
 $read = fn (mixed $value, array $attributes, DateFormatter $df)
     : DateTimeImmutable => $df->toDateTime(value: $value);
 
-$column = Datetime::new(name: 'created_at')->read($read);
+$column = new Datetime(name: 'created_at')->read($read);
 ```
 
 Check out the [Dater Service - DateFormatter](https://github.com/tobento-ch/service-dater#date-formatter) for more detail.
@@ -781,12 +781,12 @@ You may use the write method to cast your value. Without specifying a write meth
 use Tobento\Service\Repository\Storage\Column\Datetime;
 use Tobento\Service\Dater\DateFormatter;
 
-$column = Datetime::new(name: 'created_at');
+$column = new Datetime(name: 'created_at');
 
 $write = fn (mixed $value, array $attributes, string $action, DateFormatter $df)
     : string => $df->format(value: $value, format: 'H:i:s');
 
-$column = Datetime::new(name: 'created_at')->read($read);
+$column = new Datetime(name: 'created_at')->read($read);
 ```
 
 Check out the [Dater Service - DateFormatter](https://github.com/tobento-ch/service-dater#date-formatter) for more detail.
@@ -798,7 +798,7 @@ Use the ```autoCreate``` method if you want the date to be automatically created
 ```php
 use Tobento\Service\Repository\Storage\Column\Datetime;
 
-$column = Datetime::new(name: 'created_at')->autoCreate();
+$column = new Datetime(name: 'created_at')->autoCreate();
 ```
 
 **autoUpdate**
@@ -808,7 +808,7 @@ Use the ```autoUpdate``` method if you want the date to be automatically updated
 ```php
 use Tobento\Service\Repository\Storage\Column\Datetime;
 
-$column = Datetime::new(name: 'updated_at')->autoUpdate();
+$column = new Datetime(name: 'updated_at')->autoUpdate();
 ```
 
 ### Float
@@ -816,18 +816,18 @@ $column = Datetime::new(name: 'updated_at')->autoUpdate();
 ```php
 use Tobento\Service\Repository\Storage\Column\FloatCol;
 
-$column = FloatCol::new(name: 'name');
+$column = new FloatCol(name: 'name');
 
 // with float type (default):
-$column = FloatCol::new(name: 'name', type: 'float')
+$column = new FloatCol(name: 'name', type: 'float')
     ->type(nullable: false, default: 0.5);
 
 // with double type:
-$column = FloatCol::new(name: 'name', type: 'double')
+$column = new FloatCol(name: 'name', type: 'double')
     ->type(nullable: false, default: 0.5);
 
 // with decimal type:
-$column = FloatCol::new(name: 'name', type: 'decimal')
+$column = new FloatCol(name: 'name', type: 'decimal')
     ->type(nullable: false, default: 0.5, precision: 10, scale: 0);
 ```
 
@@ -836,13 +836,13 @@ $column = FloatCol::new(name: 'name', type: 'decimal')
 ```php
 use Tobento\Service\Repository\Storage\Column\Id;
 
-$column = Id::new();
+$column = new Id();
 
 // with name (default is id):
-$column = Id::new(name: 'some_id');
+$column = new Id(name: 'some_id');
 
 // with bigPrimary type (default):
-$column = Id::new(type: 'bigPrimary')
+$column = new Id(type: 'bigPrimary')
     ->type(
         length: 18,
         unsigned: true,
@@ -850,7 +850,7 @@ $column = Id::new(type: 'bigPrimary')
     );
 
 // with primary:
-$column = Id::new(type: 'primary')
+$column = new Id(type: 'primary')
     ->type(
         length: 5,
         unsigned: true,
@@ -863,18 +863,18 @@ $column = Id::new(type: 'primary')
 ```php
 use Tobento\Service\Repository\Storage\Column\Integer;
 
-$column = Integer::new(name: 'name');
+$column = new Integer(name: 'name');
 
 // with int type (default):
-$column = Integer::new(name: 'name', type: 'int')
+$column = new Integer(name: 'name', type: 'int')
     ->type(length: 11, unsigned: true, nullable: false, default: 0);
 
 // with tinyInt type:
-$column = Integer::new(name: 'name', type: 'tinyInt')
+$column = new Integer(name: 'name', type: 'tinyInt')
     ->type(length: 5, unsigned: true, nullable: false, default: 0);
 
 // with bigInt type:
-$column = Integer::new(name: 'name', type: 'bigInt')
+$column = new Integer(name: 'name', type: 'bigInt')
     ->type(length: 200, unsigned: true, nullable: false, default: 0);
 ```
 
@@ -883,9 +883,9 @@ $column = Integer::new(name: 'name', type: 'bigInt')
 ```php
 use Tobento\Service\Repository\Storage\Column\Json;
 
-$column = Json::new(name: 'name');
+$column = new Json(name: 'name');
 
-$column = Json::new(name: 'name')
+$column = new Json(name: 'name')
     ->type(nullable: false, default: ['foo', 'bar']);
 ```
 
@@ -894,18 +894,18 @@ $column = Json::new(name: 'name')
 ```php
 use Tobento\Service\Repository\Storage\Column\Text;
 
-$column = Text::new(name: 'sku');
+$column = new Text(name: 'sku');
 
 // with string type (default):
-$column = Text::new(name: 'sku', type: 'string')
+$column = new Text(name: 'sku', type: 'string')
     ->type(length: 100, nullable: false, default: '');
 
 // with char type:
-$column = Text::new(name: 'locale', type: 'char')
+$column = new Text(name: 'locale', type: 'char')
     ->type(length: 5, nullable: false, default: 'en');
 
 // with text type:
-$column = Text::new(name: 'desc', type: 'text')
+$column = new Text(name: 'desc', type: 'text')
     ->type(nullable: false, default: 'lorem ipsum');
 ```
 
@@ -914,16 +914,16 @@ $column = Text::new(name: 'desc', type: 'text')
 ```php
 use Tobento\Service\Repository\Storage\Column\Translatable;
 
-$column = Translatable::new(name: 'name');
+$column = new Translatable(name: 'name');
 
 // with string subtype (default):
-$column = Translatable::new(name: 'name', subtype: 'string')
+$column = new Translatable(name: 'name', subtype: 'string')
     ->type(nullable: false)
     ->read(fn (string $value, array $attributes, string $locale): string => strtoupper($value))
     ->write(fn (string $value, array $attributes, string $action, string $locale): string => strtoupper($value));
     
 // with array subtype:
-$column = Translatable::new(name: 'name', subtype: 'array')
+$column = new Translatable(name: 'name', subtype: 'array')
     ->type(nullable: false)
     ->read(fn (array $value, array $attributes, string $locale): array => $value)
     ->write(fn (array $value, array $attributes, string $action, string $locale): array => $value);
