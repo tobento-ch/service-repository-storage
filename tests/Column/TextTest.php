@@ -24,7 +24,7 @@ class TextTest extends TestCase
 {
     public function testInterfaceMethods()
     {
-        $column = Column\Text::new(name: 'name');
+        $column = new Column\Text(name: 'name');
         
         $this->assertInstanceof(Column\Text::class, $column);
         $this->assertInstanceof(Column\ColumnInterface::class, $column);
@@ -38,21 +38,21 @@ class TextTest extends TestCase
     
     public function testValidTypes()
     {
-        $this->assertSame('string', Column\Text::new(name: 'name', type: 'string')->getType()->type());
-        $this->assertSame('char', Column\Text::new(name: 'name', type: 'char')->getType()->type());
-        $this->assertSame('text', Column\Text::new(name: 'name', type: 'text')->getType()->type());
+        $this->assertSame('string', new Column\Text(name: 'name', type: 'string')->getType()->type());
+        $this->assertSame('char', new Column\Text(name: 'name', type: 'char')->getType()->type());
+        $this->assertSame('text', new Column\Text(name: 'name', type: 'text')->getType()->type());
     }
     
     public function testThrowsInvalidArgumentExceptionIfInvalidType()
     {
         $this->expectException(InvalidArgumentException::class);
         
-        Column\Text::new(name: 'name', type: 'foo');
+        new Column\Text(name: 'name', type: 'foo');
     }    
     
     public function testReadingMethod()
     {
-        $column = Column\Text::new(name: 'name');
+        $column = new Column\Text(name: 'name');
         
         $this->assertSame('lorem', $column->reading(value: 'lorem', attributes: []));
         $this->assertIsString($column->reading(value: true, attributes: []));
@@ -62,7 +62,7 @@ class TextTest extends TestCase
     
     public function testWritingMethod()
     {
-        $column = Column\Text::new(name: 'name');
+        $column = new Column\Text(name: 'name');
         
         $this->assertSame('lorem', $column->writing(value: 'lorem', attributes: []));
         $this->assertIsString($column->writing(value: true, attributes: []));
@@ -72,7 +72,7 @@ class TextTest extends TestCase
 
     public function testTypeMethod()
     {
-        $column = Column\Text::new(name: 'name')->type(type: 'array', param: 'value');
+        $column = new Column\Text(name: 'name')->type(type: 'array', param: 'value');
         
         $this->assertSame('string', $column->getType()->type());
         $this->assertSame(['type' => 'string', 'param' => 'value'], $column->getType()->parameters());
@@ -80,16 +80,16 @@ class TextTest extends TestCase
     
     public function testStorableMethod()
     {
-        $this->assertTrue(Column\Text::new(name: 'name')->storable()->isStorable());
-        $this->assertTrue(Column\Text::new(name: 'name')->storable(true)->isStorable());
-        $this->assertFalse(Column\Text::new(name: 'name')->storable(false)->isStorable());
+        $this->assertTrue(new Column\Text(name: 'name')->storable()->isStorable());
+        $this->assertTrue(new Column\Text(name: 'name')->storable(true)->isStorable());
+        $this->assertFalse(new Column\Text(name: 'name')->storable(false)->isStorable());
     }
     
     public function testReadMethod()
     {
         $reader = fn (string $value, array $attributes): string => ucfirst($value);
         
-        $column = Column\Text::new(name: 'name')->read($reader);
+        $column = new Column\Text(name: 'name')->read($reader);
         
         $this->assertSame('Lorem', $column->reading(value: 'lorem', attributes: []));
         $this->assertSame('1.5', $column->reading(value: 1.5, attributes: []));
@@ -100,7 +100,7 @@ class TextTest extends TestCase
     {
         $writer = fn (string $value, array $attributes): string => ucfirst($value);
         
-        $column = Column\Text::new(name: 'name')->write($writer);
+        $column = new Column\Text(name: 'name')->write($writer);
         
         $this->assertSame('Lorem', $column->writing(value: 'lorem', attributes: []));
         $this->assertSame('1.5', $column->writing(value: 1.5, attributes: []));

@@ -21,7 +21,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * RepositoryWriteCastTest
  */
-class RepositoryWriteCastTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryCastTest
+class RepositoryWriteCastTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryCast
 {
     public function setUp(): void
     {

@@ -32,8 +32,8 @@ class SchemaTableFactoryTest extends TestCase
         $table = $factory->createTableFromColumns(
             tableName: 'products',
             columns: new Columns(
-                Column\Id::new('id'),
-                Column\Text::new('foo'),
+                new Column\Id('id'),
+                new Column\Text('foo'),
             ),
         );
         
@@ -47,9 +47,9 @@ class SchemaTableFactoryTest extends TestCase
         $table = $factory->createTableFromColumns(
             tableName: 'products',
             columns: new Columns(
-                Column\Id::new('id'),
-                Column\Text::new('foo'),
-                Column\Text::new('bar')->storable(false),
+                new Column\Id('id'),
+                new Column\Text('foo'),
+                new Column\Text('bar')->storable(false),
             ),
         );
         
@@ -63,9 +63,9 @@ class SchemaTableFactoryTest extends TestCase
         $table = $factory->createTableFromColumns(
             tableName: 'products',
             columns: new Columns(
-                Column\Text::new('foo')
+                new Column\Text('foo')
                     ->type(length: 150, nullable: false, default: 'foo'),
-                Column\Integer::new('bar')
+                new Column\Integer('bar')
                     ->type(
                         unsigned: true,
                         index: ['name' => 'index_name', 'column' => 'name', 'unique' => true, 'primary' => true],
@@ -94,8 +94,8 @@ class SchemaTableFactoryTest extends TestCase
         $table = $factory->createTableFromColumns(
             tableName: 'products',
             columns: new Columns(
-                Column\Id::new('id'),
-                Column\Integer::new('foo')
+                new Column\Id('id'),
+                new Column\Integer('foo')
                     ->type(
                         unsigned: true,
                         index: ['name' => 'index_name', 'unique' => true, 'primary' => true],

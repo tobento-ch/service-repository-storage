@@ -21,7 +21,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * RepositoryReadCastTest
  */
-class RepositoryReadCastTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryCastTest
+class RepositoryReadCastTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryCast
 {
     public function setUp(): void
     {
@@ -30,8 +30,6 @@ class RepositoryReadCastTest extends \Tobento\Service\Repository\Storage\Test\Re
             table: 'products',
             columns: $this->getColumns(),
         );
-        
-        $this->writeRepository = $this->repository;
         
         (new Dir())->delete(__DIR__.'/tmp/');
     }

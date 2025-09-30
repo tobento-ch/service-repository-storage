@@ -23,7 +23,7 @@ class BooleanTest extends TestCase
 {
     public function testInterfaceMethods()
     {
-        $column = Column\Boolean::new(name: 'name');
+        $column = new Column\Boolean(name: 'name');
         
         $this->assertInstanceof(Column\Boolean::class, $column);
         $this->assertInstanceof(Column\ColumnInterface::class, $column);
@@ -37,7 +37,7 @@ class BooleanTest extends TestCase
     
     public function testReadingMethod()
     {
-        $column = Column\Boolean::new(name: 'name');
+        $column = new Column\Boolean(name: 'name');
         
         $this->assertTrue($column->reading(value: true, attributes: []));
         $this->assertTrue($column->reading(value: 'f', attributes: []));
@@ -50,7 +50,7 @@ class BooleanTest extends TestCase
     
     public function testWritingMethod()
     {
-        $column = Column\Boolean::new(name: 'name');
+        $column = new Column\Boolean(name: 'name');
         
         $this->assertTrue($column->writing(value: true, attributes: []));
         $this->assertTrue($column->writing(value: 'f', attributes: []));
@@ -63,7 +63,7 @@ class BooleanTest extends TestCase
     
     public function testTypeMethod()
     {
-        $column = Column\Boolean::new(name: 'name')->type(type: 'array', param: 'value');
+        $column = new Column\Boolean(name: 'name')->type(type: 'array', param: 'value');
         
         $this->assertSame('bool', $column->getType()->type());
         $this->assertSame(['type' => 'bool', 'param' => 'value'], $column->getType()->parameters());
@@ -71,14 +71,14 @@ class BooleanTest extends TestCase
     
     public function testStorableMethod()
     {
-        $this->assertTrue(Column\Boolean::new(name: 'name')->storable()->isStorable());
-        $this->assertTrue(Column\Boolean::new(name: 'name')->storable(true)->isStorable());
-        $this->assertFalse(Column\Boolean::new(name: 'name')->storable(false)->isStorable());
+        $this->assertTrue(new Column\Boolean(name: 'name')->storable()->isStorable());
+        $this->assertTrue(new Column\Boolean(name: 'name')->storable(true)->isStorable());
+        $this->assertFalse(new Column\Boolean(name: 'name')->storable(false)->isStorable());
     }
     
     public function testReadMethod()
     {
-        $column = Column\Boolean::new(name: 'name')
+        $column = new Column\Boolean(name: 'name')
             ->read(fn (bool $value, array $attributes): bool => !$value);
         
         $this->assertFalse($column->reading(value: true, attributes: []));
@@ -87,7 +87,7 @@ class BooleanTest extends TestCase
     
     public function testWriteMethod()
     {
-        $column = Column\Boolean::new(name: 'name')
+        $column = new Column\Boolean(name: 'name')
             ->write(fn (bool $value, array $attributes): bool => !$value);
         
         $this->assertFalse($column->writing(value: true, attributes: []));

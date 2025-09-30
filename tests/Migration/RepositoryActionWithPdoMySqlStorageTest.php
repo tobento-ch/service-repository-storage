@@ -55,8 +55,8 @@ class RepositoryActionWithPdoMySqlStorageTest extends TestCase
             storage: $this->storage,
             table: 'products',
             columns: [
-                Column\Id::new(),
-                Column\Text::new('sku'),
+                new Column\Id(),
+                new Column\Text('sku'),
             ],
         ) extends StorageRepository {
             //

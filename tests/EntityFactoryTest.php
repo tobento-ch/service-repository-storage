@@ -73,7 +73,7 @@ class EntityFactoryTest extends TestCase
         $entityFactory = new EntityFactory();
         
         $entityFactory->setColumns([
-            Text::new(name: 'title')
+            new Text(name: 'title')
                 ->read(fn (string $value, array $attributes): string => ucfirst($value))
         ]);
         

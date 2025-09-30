@@ -25,7 +25,7 @@ use PDO;
 /**
  * RepositoryWithDefaultValueTest
  */
-class RepositoryWithDefaultValueTest extends \Tobento\Service\Repository\Storage\Test\RepositoryWithDefaultValueTest
+class RepositoryWithDefaultValueTest extends \Tobento\Service\Repository\Storage\Test\RepositoryWithDefaultValue
 {
     public function setUp(): void
     {
@@ -61,6 +61,10 @@ class RepositoryWithDefaultValueTest extends \Tobento\Service\Repository\Storage
 
     public function tearDown(): void
     {
+        if (is_null($this->repository)) {
+            return;
+        }
+        
         $table = new Table(name: $this->repository->table());
         $table->dropTable();
         

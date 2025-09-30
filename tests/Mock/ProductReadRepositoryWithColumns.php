@@ -26,9 +26,9 @@ class ProductReadRepositoryWithColumns extends StorageReadRepository
     protected function configureColumns(): iterable|ColumnsInterface
     {
         return [
-            Column\Id::new(),
-            Column\Text::new('sku'),
-            Column\FloatCol::new('price'),
+            new Column\Id(),
+            new Column\Text('sku'),
+            new Column\FloatCol('price'),
         ];
     }
 }

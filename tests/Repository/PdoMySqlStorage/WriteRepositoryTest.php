@@ -27,7 +27,7 @@ use PDO;
 /**
  * WriteRepositoryTest
  */
-class WriteRepositoryTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryTest
+class WriteRepositoryTest extends \Tobento\Service\Repository\Storage\Test\WriteRepository
 {
     public function setUp(): void
     {
@@ -63,6 +63,10 @@ class WriteRepositoryTest extends \Tobento\Service\Repository\Storage\Test\Write
 
     public function tearDown(): void
     {
+        if (is_null($this->repository)) {
+            return;
+        }
+        
         $table = new Table(name: $this->repository->table());
         $table->dropTable();
         

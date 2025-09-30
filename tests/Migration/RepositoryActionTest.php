@@ -32,8 +32,8 @@ class RepositoryActionTest extends TestCase
             storage: new InMemoryStorage([]),
             table: 'products',
             columns: [
-                Column\Id::new(),
-                Column\Text::new('sku'),
+                new Column\Id(),
+                new Column\Text('sku'),
             ],
         ) extends StorageRepository {
             //

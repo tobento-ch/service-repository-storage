@@ -23,7 +23,7 @@ class JsonTest extends TestCase
 {
     public function testInterfaceMethods()
     {
-        $column = Column\Json::new(name: 'name');
+        $column = new Column\Json(name: 'name');
         
         $this->assertInstanceof(Column\Json::class, $column);
         $this->assertInstanceof(Column\ColumnInterface::class, $column);
@@ -37,7 +37,7 @@ class JsonTest extends TestCase
 
     public function testReadingMethod()
     {
-        $column = Column\Json::new(name: 'name');
+        $column = new Column\Json(name: 'name');
         
         $this->assertSame(['key' => 'value'], $column->reading(value: ['key' => 'value'], attributes: []));
         $this->assertIsArray($column->reading(value: true, attributes: []));
@@ -47,7 +47,7 @@ class JsonTest extends TestCase
     
     public function testWritingMethod()
     {
-        $column = Column\Json::new(name: 'name');
+        $column = new Column\Json(name: 'name');
         
         $this->assertSame(['key' => 'value'], $column->writing(value: ['key' => 'value'], attributes: []));
         $this->assertIsArray($column->writing(value: true, attributes: []));
@@ -57,7 +57,7 @@ class JsonTest extends TestCase
 
     public function testTypeMethod()
     {
-        $column = Column\Json::new(name: 'name')->type(type: 'int', param: 'value');
+        $column = new Column\Json(name: 'name')->type(type: 'int', param: 'value');
         
         $this->assertSame('json', $column->getType()->type());
         $this->assertSame(['type' => 'json', 'param' => 'value'], $column->getType()->parameters());
@@ -65,16 +65,16 @@ class JsonTest extends TestCase
     
     public function testStorableMethod()
     {
-        $this->assertTrue(Column\Json::new(name: 'name')->storable()->isStorable());
-        $this->assertTrue(Column\Json::new(name: 'name')->storable(true)->isStorable());
-        $this->assertFalse(Column\Json::new(name: 'name')->storable(false)->isStorable());
+        $this->assertTrue(new Column\Json(name: 'name')->storable()->isStorable());
+        $this->assertTrue(new Column\Json(name: 'name')->storable(true)->isStorable());
+        $this->assertFalse(new Column\Json(name: 'name')->storable(false)->isStorable());
     }
     
     public function testReadMethod()
     {
         $reader = fn (array $value, array $attributes): array => ['key' => 'new'];
         
-        $column = Column\Json::new(name: 'name')->read($reader);
+        $column = new Column\Json(name: 'name')->read($reader);
         
         $this->assertSame(['key' => 'new'], $column->reading(value: ['key' => 'value'], attributes: []));
         $this->assertSame(['key' => 'new'], $column->reading(value: 'foo', attributes: []));
@@ -84,7 +84,7 @@ class JsonTest extends TestCase
     {
         $writer = fn (array $value, array $attributes): array => ['key' => 'new'];
         
-        $column = Column\Json::new(name: 'name')->write($writer);
+        $column = new Column\Json(name: 'name')->write($writer);
         
         $this->assertSame(['key' => 'new'], $column->writing(value: ['key' => 'value'], attributes: []));
         $this->assertSame(['key' => 'new'], $column->writing(value: 'foo', attributes: []));

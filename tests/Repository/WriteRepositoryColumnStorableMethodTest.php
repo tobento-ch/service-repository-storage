@@ -21,7 +21,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * WriteRepositoryColumnStorableMethodTest
  */
-class WriteRepositoryColumnStorableMethodTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryColumnStorableMethodTest
+class WriteRepositoryColumnStorableMethodTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryColumnStorableMethod
 {
     public function setUp(): void
     {

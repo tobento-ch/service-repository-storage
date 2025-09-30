@@ -21,7 +21,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * RepositoryWithDefaultValueTest
  */
-class RepositoryWithDefaultValueTest extends \Tobento\Service\Repository\Storage\Test\RepositoryWithDefaultValueTest
+class RepositoryWithDefaultValueTest extends \Tobento\Service\Repository\Storage\Test\RepositoryWithDefaultValue
 {
     public function setUp(): void
     {

@@ -63,9 +63,9 @@ class RepositoryMiscTest extends TestCase
             ),
             table: 'products',
             columns: [
-                Column\Id::new(),
-                Column\Text::new('sku'),
-                Column\FloatCol::new('price'),
+                new Column\Id(),
+                new Column\Text('sku'),
+                new Column\FloatCol('price'),
             ],
         );
         
@@ -101,9 +101,9 @@ class RepositoryMiscTest extends TestCase
         );
         
         $columns = new Column\Columns(
-            Column\Id::new(),
-            Column\Text::new('sku'),
-            Column\FloatCol::new('price'),
+            new Column\Id(),
+            new Column\Text('sku'),
+            new Column\FloatCol('price'),
         );
         
         $repository = new ProductRepository(

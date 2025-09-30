@@ -24,7 +24,7 @@ class FloatColTest extends TestCase
 {
     public function testInterfaceMethods()
     {
-        $column = Column\FloatCol::new(name: 'name');
+        $column = new Column\FloatCol(name: 'name');
         
         $this->assertInstanceof(Column\FloatCol::class, $column);
         $this->assertInstanceof(Column\ColumnInterface::class, $column);
@@ -38,21 +38,21 @@ class FloatColTest extends TestCase
     
     public function testValidTypes()
     {
-        $this->assertSame('float', Column\FloatCol::new(name: 'name', type: 'float')->getType()->type());
-        $this->assertSame('double', Column\FloatCol::new(name: 'name', type: 'double')->getType()->type());
-        $this->assertSame('decimal', Column\FloatCol::new(name: 'name', type: 'decimal')->getType()->type());
+        $this->assertSame('float', new Column\FloatCol(name: 'name', type: 'float')->getType()->type());
+        $this->assertSame('double', new Column\FloatCol(name: 'name', type: 'double')->getType()->type());
+        $this->assertSame('decimal', new Column\FloatCol(name: 'name', type: 'decimal')->getType()->type());
     }
     
     public function testThrowsInvalidArgumentExceptionIfInvalidType()
     {
         $this->expectException(InvalidArgumentException::class);
         
-        Column\FloatCol::new(name: 'name', type: 'foo');
+        new Column\FloatCol(name: 'name', type: 'foo');
     }    
     
     public function testReadingMethod()
     {
-        $column = Column\FloatCol::new(name: 'name');
+        $column = new Column\FloatCol(name: 'name');
         
         $this->assertSame(1.5, $column->reading(value: 1.5, attributes: []));
         $this->assertIsFloat($column->reading(value: true, attributes: []));
@@ -63,7 +63,7 @@ class FloatColTest extends TestCase
     
     public function testWritingMethod()
     {
-        $column = Column\FloatCol::new(name: 'name');
+        $column = new Column\FloatCol(name: 'name');
         
         $this->assertSame(1.5, $column->writing(value: 1.5, attributes: []));
         $this->assertIsFloat($column->writing(value: true, attributes: []));
@@ -74,7 +74,7 @@ class FloatColTest extends TestCase
 
     public function testTypeMethod()
     {
-        $column = Column\FloatCol::new(name: 'name')->type(type: 'array', param: 'value');
+        $column = new Column\FloatCol(name: 'name')->type(type: 'array', param: 'value');
         
         $this->assertSame('float', $column->getType()->type());
         $this->assertSame(['type' => 'float', 'param' => 'value'], $column->getType()->parameters());
@@ -82,16 +82,16 @@ class FloatColTest extends TestCase
     
     public function testStorableMethod()
     {
-        $this->assertTrue(Column\FloatCol::new(name: 'name')->storable()->isStorable());
-        $this->assertTrue(Column\FloatCol::new(name: 'name')->storable(true)->isStorable());
-        $this->assertFalse(Column\FloatCol::new(name: 'name')->storable(false)->isStorable());
+        $this->assertTrue(new Column\FloatCol(name: 'name')->storable()->isStorable());
+        $this->assertTrue(new Column\FloatCol(name: 'name')->storable(true)->isStorable());
+        $this->assertFalse(new Column\FloatCol(name: 'name')->storable(false)->isStorable());
     }
     
     public function testReadMethod()
     {
         $reader = fn (float $value, array $attributes): float => $value * -1;
         
-        $column = Column\FloatCol::new(name: 'name')->read($reader);
+        $column = new Column\FloatCol(name: 'name')->read($reader);
         
         $this->assertSame(-1.5, $column->reading(value: 1.5, attributes: []));
         $this->assertSame(0., $column->reading(value: 'foo', attributes: []));
@@ -101,7 +101,7 @@ class FloatColTest extends TestCase
     {
         $writer = fn (float $value, array $attributes): float => $value * -1;
         
-        $column = Column\FloatCol::new(name: 'name')->write($writer);
+        $column = new Column\FloatCol(name: 'name')->write($writer);
         
         $this->assertSame(-1.5, $column->writing(value: 1.5, attributes: []));
         $this->assertSame(0., $column->writing(value: 'foo', attributes: []));

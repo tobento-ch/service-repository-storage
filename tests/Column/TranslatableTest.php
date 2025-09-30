@@ -26,7 +26,7 @@ class TranslatableTest extends TestCase
 {
     public function testInterfaceMethods()
     {
-        $column = Column\Translatable::new(name: 'name');
+        $column = new Column\Translatable(name: 'name');
         
         $this->assertInstanceof(Column\Translatable::class, $column);
         $this->assertInstanceof(Column\ColumnInterface::class, $column);
@@ -40,26 +40,26 @@ class TranslatableTest extends TestCase
     
     public function testValidSubtypes()
     {
-        $this->assertSame('json', Column\Translatable::new(name: 'name', subtype: 'string')->getType()->type());
-        $this->assertSame('json', Column\Translatable::new(name: 'name', subtype: 'array')->getType()->type());
+        $this->assertSame('json', new Column\Translatable(name: 'name', subtype: 'string')->getType()->type());
+        $this->assertSame('json', new Column\Translatable(name: 'name', subtype: 'array')->getType()->type());
     }
     
     public function testThrowsInvalidArgumentExceptionIfInvalidType()
     {
         $this->expectException(InvalidArgumentException::class);
         
-        Column\Translatable::new(name: 'name', subtype: 'foo');
+        new Column\Translatable(name: 'name', subtype: 'foo');
     }
     
     public function testGetSubtypeMethod()
     {
-        $this->assertSame('string', (Column\Translatable::new(name: 'name'))->getSubtype());
-        $this->assertSame('array', (Column\Translatable::new(name: 'name', subtype: 'array'))->getSubtype());
+        $this->assertSame('string', (new Column\Translatable(name: 'name'))->getSubtype());
+        $this->assertSame('array', (new Column\Translatable(name: 'name', subtype: 'array'))->getSubtype());
     }
     
     public function testReadingMethod()
     {
-        $column = Column\Translatable::new(name: 'name');
+        $column = new Column\Translatable(name: 'name');
         
         $this->assertInstanceof(StringTranslations::class, $column->reading(value: ['en' => 'En'], attributes: []));
         $this->assertInstanceof(StringTranslations::class, $column->reading(value: true, attributes: []));
@@ -70,7 +70,7 @@ class TranslatableTest extends TestCase
     
     public function testReadingMethodWithArraySubtype()
     {
-        $column = Column\Translatable::new(name: 'name', subtype: 'array');
+        $column = new Column\Translatable(name: 'name', subtype: 'array');
         
         $this->assertInstanceof(ArrayTranslations::class, $column->reading(value: ['en' => ['color' => 'red']], attributes: []));
         $this->assertInstanceof(ArrayTranslations::class, $column->reading(value: true, attributes: []));
@@ -81,7 +81,7 @@ class TranslatableTest extends TestCase
     
     public function testWritingMethod()
     {
-        $column = Column\Translatable::new(name: 'name');
+        $column = new Column\Translatable(name: 'name');
         
         $this->assertSame(['en' => 'En'], $column->writing(value: ['en' => 'En'], attributes: []));
         $this->assertSame([], $column->writing(value: true, attributes: []));
@@ -91,7 +91,7 @@ class TranslatableTest extends TestCase
     
     public function testWritingMethodWithArraySubtype()
     {
-        $column = Column\Translatable::new(name: 'name', subtype: 'array');
+        $column = new Column\Translatable(name: 'name', subtype: 'array');
         
         $this->assertSame(['en' => ['color' => 'red']], $column->writing(value: ['en' => ['color' => 'red']], attributes: []));
         $this->assertSame([], $column->writing(value: true, attributes: []));
@@ -101,7 +101,7 @@ class TranslatableTest extends TestCase
 
     public function testTypeMethod()
     {
-        $column = Column\Translatable::new(name: 'name')->type(type: 'string', param: 'value');
+        $column = new Column\Translatable(name: 'name')->type(type: 'string', param: 'value');
         
         $this->assertSame('json', $column->getType()->type());
         $this->assertSame(['type' => 'json', 'param' => 'value'], $column->getType()->parameters());
@@ -109,16 +109,16 @@ class TranslatableTest extends TestCase
     
     public function testStorableMethod()
     {
-        $this->assertTrue(Column\Translatable::new(name: 'name')->storable()->isStorable());
-        $this->assertTrue(Column\Translatable::new(name: 'name')->storable(true)->isStorable());
-        $this->assertFalse(Column\Translatable::new(name: 'name')->storable(false)->isStorable());
+        $this->assertTrue(new Column\Translatable(name: 'name')->storable()->isStorable());
+        $this->assertTrue(new Column\Translatable(name: 'name')->storable(true)->isStorable());
+        $this->assertFalse(new Column\Translatable(name: 'name')->storable(false)->isStorable());
     }
     
     public function testReadMethod()
     {
         $reader = fn (string $value, array $attributes, string $locale): string => strtoupper($value);
         
-        $column = Column\Translatable::new(name: 'name')->read($reader);
+        $column = new Column\Translatable(name: 'name')->read($reader);
         
         $this->assertSame(['en' => 'EN'], $column->reading(value: ['en' => 'En'], attributes: [])->all());
         $this->assertSame([], $column->reading(value: 4.5, attributes: [])->all());
@@ -128,7 +128,7 @@ class TranslatableTest extends TestCase
     {
         $reader = fn (string $value, array $attributes, string $locale): string => strtoupper($value);
         
-        $column = Column\Translatable::new(name: 'name')->locales('de')->read($reader);
+        $column = new Column\Translatable(name: 'name')->locales('de')->read($reader);
         
         $this->assertSame(['de' => 'DE'], $column->reading(value: ['en' => 'En', 'de' => 'De'], attributes: [])->all());
     }
@@ -137,7 +137,7 @@ class TranslatableTest extends TestCase
     {
         $reader = fn (array $value, array $attributes, string $locale): array => ['color' => 'blue'];
         
-        $column = Column\Translatable::new(name: 'name', subtype: 'array')->read($reader);
+        $column = new Column\Translatable(name: 'name', subtype: 'array')->read($reader);
         
         $this->assertSame(['en' => ['color' => 'blue']], $column->reading(value: ['en' => ['color' => 'red']], attributes: [])->all());
         $this->assertSame([], $column->reading(value: 4.5, attributes: [])->all());
@@ -145,7 +145,7 @@ class TranslatableTest extends TestCase
     
     public function testReadingMethodWithArraySubtypeUsesOnlySpecifiedLocales()
     {
-        $column = Column\Translatable::new(name: 'name', subtype: 'array')->locales('de');
+        $column = new Column\Translatable(name: 'name', subtype: 'array')->locales('de');
         
         $this->assertSame(
             ['de' => ['color' => 'rot']],
@@ -157,7 +157,7 @@ class TranslatableTest extends TestCase
     {
         $writer = fn (string $value, array $attributes, string $locale): string => strtoupper($value);
         
-        $column = Column\Translatable::new(name: 'name')->write($writer);
+        $column = new Column\Translatable(name: 'name')->write($writer);
         
         $this->assertSame(['en' => 'EN'], $column->writing(value: ['en' => 'En'], attributes: []));
         $this->assertSame([], $column->writing(value: 4.5, attributes: []));
@@ -167,7 +167,7 @@ class TranslatableTest extends TestCase
     {
         $writer = fn (string $value, array $attributes, string $locale): string => strtoupper($value);
         
-        $column = Column\Translatable::new(name: 'name')->locales('de')->write($writer);
+        $column = new Column\Translatable(name: 'name')->locales('de')->write($writer);
         
         $this->assertSame(['de' => 'DE'], $column->writing(value: ['en' => 'En', 'de' => 'De'], attributes: []));
     }
@@ -176,7 +176,7 @@ class TranslatableTest extends TestCase
     {
         $writer = fn (array $value, array $attributes, string $locale): array => ['color' => 'blue'];
         
-        $column = Column\Translatable::new(name: 'name')->write($writer);
+        $column = new Column\Translatable(name: 'name')->write($writer);
         
         $this->assertSame(['en' => ['color' => 'blue']], $column->writing(value: ['en' => ['color' => 'red']], attributes: []));
         $this->assertSame([], $column->writing(value: 4.5, attributes: []));
@@ -184,7 +184,7 @@ class TranslatableTest extends TestCase
     
     public function testWritingMethodWithArraySubtypeUsesOnlySpecifiedLocales()
     {
-        $column = Column\Translatable::new(name: 'name')->locales('de');
+        $column = new Column\Translatable(name: 'name')->locales('de');
         
         $this->assertSame(
             ['de' => ['color' => 'rot']],

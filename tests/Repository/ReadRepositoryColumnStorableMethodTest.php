@@ -22,7 +22,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * ReadRepositoryColumnStorableMethodTest
  */
-class ReadRepositoryColumnStorableMethodTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryColumnStorableMethodTest
+class ReadRepositoryColumnStorableMethodTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryColumnStorableMethod
 {
     public function setUp(): void
     {

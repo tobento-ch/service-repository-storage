@@ -21,7 +21,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * RepositoryReadColumnWriteMethodTest
  */
-class RepositoryReadColumnWriteMethodTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryColumnReadMethodTest
+class RepositoryReadColumnWriteMethodTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryColumnReadMethod
 {
     public function setUp(): void
     {
@@ -30,8 +30,6 @@ class RepositoryReadColumnWriteMethodTest extends \Tobento\Service\Repository\St
             table: 'products',
             columns: $this->getColumns(),
         );
-        
-        $this->writeRepository = $this->repository;
         
         (new Dir())->delete(__DIR__.'/tmp/');
     }

@@ -36,8 +36,8 @@ class ColumnsTest extends TestCase
     public function testFilterMethod()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar')->storable(false),
+            new Column\Text('foo'),
+            new Column\Text('bar')->storable(false),
         );
         
         $columnsNew = $columns->filter(
@@ -51,9 +51,9 @@ class ColumnsTest extends TestCase
     public function testStorableMethod()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar')->storable(false),
-            Column\Text::new('lorem')->storable(false),
+            new Column\Text('foo'),
+            new Column\Text('bar')->storable(false),
+            new Column\Text('lorem')->storable(false),
         );
         
         $columnsNew = $columns->storable(false);
@@ -67,9 +67,9 @@ class ColumnsTest extends TestCase
     public function testTranslatableMethod()
     {
         $columns = new Columns(
-            Column\Translatable::new('foo'),
-            Column\Translatable::new('bar'),
-            Column\Text::new('lorem'),
+            new Column\Translatable('foo'),
+            new Column\Translatable('bar'),
+            new Column\Text('lorem'),
         );
         
         $columnsNew = $columns->translatable(false);
@@ -83,9 +83,9 @@ class ColumnsTest extends TestCase
     public function testOnlyMethod()
     {
         $columns = new Columns(
-            Column\Translatable::new('foo'),
-            Column\Translatable::new('bar'),
-            Column\Text::new('lorem'),
+            new Column\Translatable('foo'),
+            new Column\Translatable('bar'),
+            new Column\Text('lorem'),
         );
         
         $columnsNew = $columns->only(['foo', 'lorem']);
@@ -97,9 +97,9 @@ class ColumnsTest extends TestCase
     public function testExceptMethod()
     {
         $columns = new Columns(
-            Column\Translatable::new('foo'),
-            Column\Translatable::new('bar'),
-            Column\Text::new('lorem'),
+            new Column\Translatable('foo'),
+            new Column\Translatable('bar'),
+            new Column\Text('lorem'),
         );
         
         $columnsNew = $columns->except(['foo', 'lorem']);
@@ -111,8 +111,8 @@ class ColumnsTest extends TestCase
     public function testColumnMethod()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar'),
+            new Column\Text('foo'),
+            new Column\Text('bar'),
         );
         
         $this->assertSame(['foo', 'bar'], $columns->column(name: 'name'));
@@ -121,8 +121,8 @@ class ColumnsTest extends TestCase
     
     public function testGetMethod()
     {
-        $foo = Column\Text::new('foo');
-        $bar = Column\Text::new('bar');
+        $foo = new Column\Text('foo');
+        $bar = new Column\Text('bar');
         $columns = new Columns($foo, $bar);
         
         $this->assertSame($foo, $columns->get(name: 'foo'));
@@ -131,8 +131,8 @@ class ColumnsTest extends TestCase
     
     public function testAllMethod()
     {
-        $foo = Column\Text::new('foo');
-        $bar = Column\Text::new('bar');
+        $foo = new Column\Text('foo');
+        $bar = new Column\Text('bar');
         $columns = new Columns($foo, $bar);
         
         $this->assertSame(['foo' => $foo, 'bar' => $bar], $columns->all());
@@ -141,22 +141,22 @@ class ColumnsTest extends TestCase
     public function testEmptyMethod()
     {
         $this->assertTrue((new Columns())->empty());
-        $this->assertFalse((new Columns(Column\Text::new('foo')))->empty());
+        $this->assertFalse((new Columns(new Column\Text('foo')))->empty());
     }
     
     public function testPrimaryMethod()
     {
         $this->assertSame(null, (new Columns())->primary());
-        $this->assertSame(null, (new Columns(Column\Text::new('foo')))->primary());
+        $this->assertSame(null, (new Columns(new Column\Text('foo')))->primary());
         
-        $id = Column\Id::new();
+        $id = new Column\Id();
         $this->assertSame($id, (new Columns($id))->primary());
     }
     
     public function testProcessReadingMethod()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
+            new Column\Text('foo'),
         );
                 
         $this->assertSame(
@@ -173,7 +173,7 @@ class ColumnsTest extends TestCase
     public function testProcessWritingMethod()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
+            new Column\Text('foo'),
         );
                 
         $this->assertSame(
@@ -190,10 +190,10 @@ class ColumnsTest extends TestCase
     public function testProcessWritingMethodWithForcedColumn()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar')->forceWriting(),
-            Column\Text::new('baz')->write(fn () => 'value')->forceWriting(),
-            Column\Text::new('lorem')->type(default: 'ipsum')->forceWriting(),
+            new Column\Text('foo'),
+            new Column\Text('bar')->forceWriting(),
+            new Column\Text('baz')->write(fn () => 'value')->forceWriting(),
+            new Column\Text('lorem')->type(default: 'ipsum')->forceWriting(),
         );
         
         $this->assertSame(
@@ -215,10 +215,10 @@ class ColumnsTest extends TestCase
     public function testProcessWritingMethodWithForcedColumnSingleAction()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar')->type(nullable: true)->forceWriting(force: true, action: 'create'),
-            Column\Text::new('baz')->write(fn () => 'value')->forceWriting(force: true, action: 'create'),
-            Column\Text::new('lorem')->type(default: 'ipsum')->forceWriting(force: true, action: 'create'),
+            new Column\Text('foo'),
+            new Column\Text('bar')->type(nullable: true)->forceWriting(force: true, action: 'create'),
+            new Column\Text('baz')->write(fn () => 'value')->forceWriting(force: true, action: 'create'),
+            new Column\Text('lorem')->type(default: 'ipsum')->forceWriting(force: true, action: 'create'),
         );
         
         $this->assertSame(
@@ -235,8 +235,8 @@ class ColumnsTest extends TestCase
     public function testProcessWritingMethodDefaultColumnValueGetsAddedOnCreateAction()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar')->type(default: 'value'),
+            new Column\Text('foo'),
+            new Column\Text('bar')->type(default: 'value'),
         );
         
         $this->assertSame(
@@ -253,8 +253,8 @@ class ColumnsTest extends TestCase
     public function testProcessWritingMethodDefaultColumnValueGetsNotAddedOnUpdateAction()
     {
         $columns = new Columns(
-            Column\Text::new('foo'),
-            Column\Text::new('bar')->type(default: 'value'),
+            new Column\Text('foo'),
+            new Column\Text('bar')->type(default: 'value'),
         );
         
         $this->assertSame(
@@ -270,8 +270,8 @@ class ColumnsTest extends TestCase
     
     public function testGetIteratorMethod()
     {
-        $foo = Column\Text::new('foo');
-        $bar = Column\Text::new('bar');
+        $foo = new Column\Text('foo');
+        $bar = new Column\Text('bar');
         $columns = new Columns($foo, $bar);
         
         $iterated = [];

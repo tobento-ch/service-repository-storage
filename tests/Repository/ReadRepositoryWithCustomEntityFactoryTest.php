@@ -23,7 +23,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * ReadRepositoryWithCustomEntityFactoryTest
  */
-class ReadRepositoryWithCustomEntityFactoryTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryWithCustomEntityFactoryTest
+class ReadRepositoryWithCustomEntityFactoryTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryWithCustomEntityFactory
 {
     public function setUp(): void
     {

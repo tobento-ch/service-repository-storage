@@ -22,7 +22,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * ReadRepositoryCastTest
  */
-class ReadRepositoryCastTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryCastTest
+class ReadRepositoryCastTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryCast
 {
     public function setUp(): void
     {

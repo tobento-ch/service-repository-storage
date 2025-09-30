@@ -22,7 +22,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * ReadRepositoryTest
  */
-class ReadRepositoryTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryTest
+class ReadRepositoryTest extends \Tobento\Service\Repository\Storage\Test\ReadRepository
 {
     public function setUp(): void
     {

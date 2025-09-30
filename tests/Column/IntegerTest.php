@@ -24,7 +24,7 @@ class IntegerTest extends TestCase
 {
     public function testInterfaceMethods()
     {
-        $column = Column\Integer::new(name: 'name');
+        $column = new Column\Integer(name: 'name');
         
         $this->assertInstanceof(Column\Integer::class, $column);
         $this->assertInstanceof(Column\ColumnInterface::class, $column);
@@ -38,21 +38,21 @@ class IntegerTest extends TestCase
     
     public function testValidTypes()
     {
-        $this->assertSame('int', Column\Integer::new(name: 'name', type: 'int')->getType()->type());
-        $this->assertSame('tinyInt', Column\Integer::new(name: 'name', type: 'tinyInt')->getType()->type());
-        $this->assertSame('bigInt', Column\Integer::new(name: 'name', type: 'bigInt')->getType()->type());
+        $this->assertSame('int', new Column\Integer(name: 'name', type: 'int')->getType()->type());
+        $this->assertSame('tinyInt', new Column\Integer(name: 'name', type: 'tinyInt')->getType()->type());
+        $this->assertSame('bigInt', new Column\Integer(name: 'name', type: 'bigInt')->getType()->type());
     }
     
     public function testThrowsInvalidArgumentExceptionIfInvalidType()
     {
         $this->expectException(InvalidArgumentException::class);
         
-        Column\Integer::new(name: 'name', type: 'foo');
+        new Column\Integer(name: 'name', type: 'foo');
     }    
     
     public function testReadingMethod()
     {
-        $column = Column\Integer::new(name: 'name');
+        $column = new Column\Integer(name: 'name');
         
         $this->assertSame(1, $column->reading(value: 1, attributes: []));
         $this->assertIsInt($column->reading(value: true, attributes: []));
@@ -62,7 +62,7 @@ class IntegerTest extends TestCase
     
     public function testWritingMethod()
     {
-        $column = Column\Integer::new(name: 'name');
+        $column = new Column\Integer(name: 'name');
         
         $this->assertSame(1, $column->writing(value: 1, attributes: []));
         $this->assertIsInt($column->writing(value: true, attributes: []));
@@ -72,7 +72,7 @@ class IntegerTest extends TestCase
 
     public function testTypeMethod()
     {
-        $column = Column\Integer::new(name: 'name')->type(type: 'array', param: 'value');
+        $column = new Column\Integer(name: 'name')->type(type: 'array', param: 'value');
         
         $this->assertSame('int', $column->getType()->type());
         $this->assertSame(['type' => 'int', 'param' => 'value'], $column->getType()->parameters());
@@ -80,16 +80,16 @@ class IntegerTest extends TestCase
     
     public function testStorableMethod()
     {
-        $this->assertTrue(Column\Integer::new(name: 'name')->storable()->isStorable());
-        $this->assertTrue(Column\Integer::new(name: 'name')->storable(true)->isStorable());
-        $this->assertFalse(Column\Integer::new(name: 'name')->storable(false)->isStorable());
+        $this->assertTrue(new Column\Integer(name: 'name')->storable()->isStorable());
+        $this->assertTrue(new Column\Integer(name: 'name')->storable(true)->isStorable());
+        $this->assertFalse(new Column\Integer(name: 'name')->storable(false)->isStorable());
     }
     
     public function testReadMethod()
     {
         $reader = fn (int $value, array $attributes): int => $value * -1;
         
-        $column = Column\Integer::new(name: 'name')->read($reader);
+        $column = new Column\Integer(name: 'name')->read($reader);
         
         $this->assertSame(-1, $column->reading(value: 1, attributes: []));
         $this->assertSame(-0, $column->reading(value: [], attributes: []));
@@ -99,7 +99,7 @@ class IntegerTest extends TestCase
     {
         $writer = fn (int $value, array $attributes): int => $value * -1;
         
-        $column = Column\Integer::new(name: 'name')->write($writer);
+        $column = new Column\Integer(name: 'name')->write($writer);
         
         $this->assertSame(-1, $column->writing(value: 1, attributes: []));
         $this->assertSame(-0, $column->writing(value: [], attributes: []));

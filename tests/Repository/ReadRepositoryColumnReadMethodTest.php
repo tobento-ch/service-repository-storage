@@ -22,7 +22,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * ReadRepositoryColumnReadMethodTest
  */
-class ReadRepositoryColumnReadMethodTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryColumnReadMethodTest
+class ReadRepositoryColumnReadMethodTest extends \Tobento\Service\Repository\Storage\Test\ReadRepositoryColumnReadMethod
 {
     public function setUp(): void
     {

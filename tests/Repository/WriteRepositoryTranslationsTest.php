@@ -21,7 +21,7 @@ use Tobento\Service\Filesystem\Dir;
 /**
  * WriteRepositoryTranslationsTest
  */
-class WriteRepositoryTranslationsTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryTranslationsTest
+class WriteRepositoryTranslationsTest extends \Tobento\Service\Repository\Storage\Test\WriteRepositoryTranslations
 {
     public function setUp(): void
     {
