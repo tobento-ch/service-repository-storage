@@ -74,6 +74,12 @@ trait WriteMethods
                 );
             }
             
+            if (method_exists($this, 'findById')) {
+                if ($entity = $this->findById(id: $id)) {
+                    return $entity;
+                }
+            }
+            
             $updatedItem = [];
             $updatedItem[$primaryKey] = $id;
         }
