@@ -119,6 +119,10 @@ abstract class ReadRepository extends TestCase
         $this->assertSame('pencil', $this->repository->findOne(where: ['options->colors' => ['contains' => 'yellow']])?->get('sku'));
         $this->assertSame('pen', $this->repository->findOne(where: ['options->colors' => ['contains' => ['red']]])?->get('sku'));
         $this->assertSame('pen', $this->repository->findOne(where: ['options->color' => ['contains key']])?->get('sku'));
+        $this->assertSame('pen', $this->repository->findOne(where: ['options->colors' => ['contains one of' => ['red']]])?->get('sku'));
+        $this->assertSame('pen', $this->repository->findOne(where: ['options->colors' => ['contains one of' => ['red', 'blue']]])?->get('sku'));
+        $this->assertSame('pen', $this->repository->findOne(where: ['options->colors' => ['contains one of' => ['red', 'blue', 'gray']]])?->get('sku'));
+        $this->assertSame(null, $this->repository->findOne(where: ['options->colors' => ['contains one of' => ['gray']]])?->get('sku'));
         
         // invalid tests.
         $this->assertSame(null, $this->repository->findOne(where: ['sku' => ['invalid' => 'foo']]));
@@ -377,5 +381,18 @@ abstract class ReadRepository extends TestCase
         $this->assertSame(['a', 'b'], $this->repository->findColumn(column: 'sku', limit: 2));
         $this->assertSame(['a', 'b'], $this->repository->findColumn(column: 'sku', limit: [2]));
         $this->assertSame(['b', 'c'], $this->repository->findColumn(column: 'sku', limit: [2, 1]));
-    }    
+    }
+    
+    public function testClone()
+    {
+        $columns = $this->writeRepository->columns();
+        $entityFactory = $this->writeRepository->entityFactory();
+        
+        $repo = clone $this->writeRepository;
+        $columnsNew = $repo->columns();
+        $entityFactoryNew = $repo->entityFactory();
+        
+        $this->assertFalse($columns === $columnsNew);
+        $this->assertFalse($entityFactory === $entityFactoryNew);
+    }
 }
