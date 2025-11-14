@@ -485,6 +485,8 @@ $entities = $repository->findAll(where: [
     'options->colors' => ['contains' => 'blue'],
     'options->colors' => ['contains' => ['blue']],
     
+    'options->colors' => ['contains one of' => ['blue', 'red']],
+    
     'options->color' => ['contains key'],
 ]);
 ```
