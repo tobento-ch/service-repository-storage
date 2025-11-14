@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Tobento\Service\Repository\Storage;
 
+use Tobento\Service\Repository\HasLocales;
+use Tobento\Service\Repository\LocalesAware;
 use Tobento\Service\Repository\Storage\Column\ColumnsInterface;
 use Tobento\Service\Repository\Storage\Column\Columns;
 use Tobento\Service\Repository\Storage\Column\ColumnInterface;
@@ -255,8 +257,13 @@ trait StorageMethods
                     // check for like operator with multiple values:
                     if (
                         is_array($v)
-                        && in_array($operator, ['like', 'or like', 'not like', 'or not like'])
+                        && in_array($operator, ['like', 'or like', 'not like', 'or not like', 'contains one of'])
                     ) {
+                        if ($operator === 'contains one of') {
+                            $operator = 'contains';
+                            $boolean = count($v) > 1 ? 'or' : 'and';
+                        }
+                        
                         foreach($v as $mv) {
                             $this->mapWhereClause($storage, $column->column(), $operator, $boolean, $mv);
                         }
