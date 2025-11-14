@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Tobento\Service\Repository\Storage\Column;
 
+use Tobento\Service\Repository\HasLocales;
+use Tobento\Service\Repository\LocalesAware;
 use Tobento\Service\Repository\Storage\Attribute\Translations;
 use Tobento\Service\Repository\Storage\Attribute\StringTranslations;
 use Tobento\Service\Repository\Storage\Attribute\ArrayTranslations;
-use Tobento\Service\Repository\Storage\LocalesAware;
-use Tobento\Service\Repository\Storage\HasLocales;
 use InvalidArgumentException;
 use JsonException;
 
