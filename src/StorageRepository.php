@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Tobento\Service\Repository\Storage;
 
+use Tobento\Service\Repository\LocalesAware;
 use Tobento\Service\Repository\RepositoryInterface;
 use Tobento\Service\Repository\Storage\Column\ColumnsInterface;
 use Tobento\Service\Repository\Storage\Column\ColumnInterface;
@@ -43,6 +44,23 @@ abstract class StorageRepository implements RepositoryInterface, LocalesAware
     ) {
         $this->columns = $this->processColumns($columns);
         $this->entityFactory = $entityFactory ?: new EntityFactory();
+        $this->entityFactory->setColumns($this->columns);
+    }
+    
+    /**
+     * Clone repository.
+     */
+    public function __clone()
+    {
+        $columns = [];
+        
+        foreach($this->columns() as $column) {
+            $columns[] = clone $column;
+        }
+        
+        $this->columns = new Column\Columns(...$columns);
+        
+        $this->entityFactory = clone $this->entityFactory;
         $this->entityFactory->setColumns($this->columns);
     }
 }
