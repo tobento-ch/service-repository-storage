@@ -131,4 +131,17 @@ abstract class WriteRepository extends TestCase
         $deleted = $this->repository->delete(where: ['sku' => [[]]]);
         $this->assertSame(0, $deleted->count());
     }
+    
+    public function testClone()
+    {
+        $columns = $this->repository->columns();
+        $entityFactory = $this->repository->entityFactory();
+        
+        $repo = clone $this->repository;
+        $columnsNew = $repo->columns();
+        $entityFactoryNew = $repo->entityFactory();
+        
+        $this->assertFalse($columns === $columnsNew);
+        $this->assertFalse($entityFactory === $entityFactoryNew);
+    }
 }
