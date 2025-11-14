@@ -48,6 +48,16 @@ class EntityFactory implements EntityFactoryInterface, StorageEntityFactoryInter
     }
     
     /**
+     * Returns the columns.
+     *
+     * @return ColumnsInterface
+     */
+    public function columns(): ColumnsInterface
+    {
+        return $this->columns;
+    }
+    
+    /**
      * Create an entity from array.
      *
      * @param array $attributes
