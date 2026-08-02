@@ -31,17 +31,34 @@ class AliasedColumns extends Columns
         $filtered = [];
 
         foreach ($aliases as $alias => $raw) {
+
             // Skip if alias name collides with a real column.
             if (!is_null(parent::get($alias))) {
                 continue;
             }
-            // Skip if the raw target column doesn't exist.
+
+            // Allow JSON path: column->index
+            if (str_contains($raw, '->')) {
+                [$name] = explode('->', $raw, 2);
+
+                // raw column must exist
+                if (is_null(parent::get($name))) {
+                    continue;
+                }
+
+                // JSON path is valid → accept alias
+                $filtered[$alias] = $raw;
+                continue;
+            }
+
+            // Normal column must exist
             if (is_null(parent::get($raw))) {
                 continue;
             }
+
             $filtered[$alias] = $raw;
         }
-        
+
         $new = clone $this;
         $new->aliases = $filtered;
         $new->readonlyAliases = $readonly;
@@ -91,13 +108,29 @@ class AliasedColumns extends Columns
     public function processReading(array $attributes): array
     {
         $attributes = parent::processReading($attributes);
-        
+
         foreach ($this->aliases as $alias => $raw) {
+
+            // JSON path alias: column->index
+            if (str_contains($raw, '->')) {
+                [$name, $index] = explode('->', $raw, 2);
+
+                if (isset($attributes[$name]) 
+                    && is_array($attributes[$name]) 
+                    && array_key_exists($index, $attributes[$name])
+                ) {
+                    $attributes[$alias] = $attributes[$name][$index];
+                }
+
+                continue;
+            }
+
+            // Normal alias
             if (array_key_exists($raw, $attributes)) {
                 $attributes[$alias] = $attributes[$raw];
             }
         }
-        
+
         return $attributes;
     }
     
@@ -121,10 +154,90 @@ class AliasedColumns extends Columns
                 continue;
             }
 
+            // JSON path alias: column->index
+            if (str_contains($raw, '->')) {
+                [$name, $index] = explode('->', $raw, 2);
+
+                // Ensure base column exists
+                if (!isset($attributes[$name]) || !is_array($attributes[$name])) {
+                    $attributes[$name] = [];
+                }
+
+                // Write into JSON structure
+                $attributes[$name][$index] = $attributes[$alias];
+
+                unset($attributes[$alias]);
+                continue;
+            }
+
+            // Normal alias
             $attributes[$raw] = $attributes[$alias];
             unset($attributes[$alias]);
         }
 
         return parent::processWriting($attributes, $action);
+    }
+    
+    /**
+     * Allows modifying the where conditions before applying them.
+     *
+     * @param array $where The original where conditions.
+     * @return array The modified where conditions.
+     */
+    public function mayModifyWhere(array $where): array
+    {
+        $resolved = [];
+
+        foreach ($where as $column => $value) {
+
+            // Nested AND/OR groups
+            if (!is_string($column)) {
+                $resolved[$column] = is_array($value)
+                    ? $this->mayModifyWhere($value)
+                    : $value;
+                continue;
+            }
+
+            // Alias → raw
+            $raw = $this->aliases[$column] ?? $column;
+
+            $resolved[$raw] = $value;
+        }
+        
+        return $resolved;
+    }
+
+    /**
+     * Allows modifying the order-by definitions before applying them.
+     *
+     * @param array $orderBy The original order-by definitions.
+     * @return array The modified order-by definitions.
+     */
+    public function mayModifyOrderBy(array $orderBy): array
+    {
+        $resolved = [];
+
+        foreach ($orderBy as $column => $direction) {
+            $raw = $this->aliases[$column] ?? $column;
+            $resolved[$raw] = $direction;
+        }
+
+        return $resolved;
+    }
+    
+    /**
+     * Allows modifying a single column name before it is used
+     * for column extraction (e.g. in findColumn).
+     *
+     * This is used to resolve alias names to their underlying
+     * raw column names, including JSON path columns such as
+     * "options->color".
+     *
+     * @param string $column The original column name.
+     * @return string The modified (raw) column name.
+     */
+    public function mayModifyColumn(string $column): string
+    {
+        return $this->aliases[$column] ?? $column;
     }
 }
