@@ -29,6 +29,7 @@
         - [Json](#json)
         - [Text](#text)
         - [Translatable](#translatable)
+    - [Aliased Columns](#aliased-columns)
     - [Translations](#translations)
         - [Where Parameters Translations](#where-parameters-translations)
         - [Write Translations](#write-translations)
@@ -1018,6 +1019,123 @@ $color = $entity->get('meta')->get(locale: 'fr', key: 'color', default: ['color'
 // check if translation exists:
 var_dump($entity->get('title')->has(locale: 'de', key: 'color'));
 // bool(true)
+```
+
+## Aliased Columns
+
+**Aliased Columns** is an enhanced implementation of `Columns` that adds support for column name aliasing. Aliases allow you to expose alternative, domain-friendly attribute names for reading and writing, while keeping the underlying raw storage column names unchanged.
+
+> **Note on Write-Safety**
+>
+> Aliases are **read-only by default** because alias names are not part of the column schema or validation rules.  
+> If external input (e.g. `$repo->create(['alias' => 'value'])`) contains alias keys, write-through aliasing would allow those values to bypass the validation and type rules defined for the raw column.  
+> Write-through aliasing can be explicitly enabled when alias names are intended to behave exactly like their raw counterparts.
+
+### Creating Aliased Columns
+
+```php
+use Tobento\Service\Repository\Storage\Column\AliasedColumns;
+use Tobento\Service\Repository\Storage\Column;
+
+$columns = new AliasedColumns(
+    new Column\Text('title'),
+    new Column\Boolean('active'),
+)->withAliases([
+    'name'=> 'title',
+    'is_active' => 'active',
+]);
+```
+
+Aliases map alias to raw:
+
+- `name` to `title`
+- `is_active` to `active`
+
+Multiple aliases may point to the same raw column.  
+All such aliases mirror the same raw value and behave consistently in both reading and writing modes.
+
+**Alias Validation & Collision Rules**
+
+Aliases are validated when calling `withAliases()`.
+Invalid or conflicting aliases are silently ignored.
+
+```php
+// Raw column exists, alias ignored
+->withAliases(['title' => 'active']); // 'title' is already a real column name
+
+// Raw column missing, alias ignored
+->withAliases(['display_name' => 'missing']); // 'missing' is not a raw column
+
+// Valid alias kept
+->withAliases(['display_name' => 'title']); // ok
+
+// Multiple aliases allowed
+->withAliases([
+    'name_short' => 'title', // ok
+    'title_display' => 'title', // ok
+]);
+```
+
+### Reading (raw to alias)
+
+Alias values are added after raw values have been processed by the parent `Columns` class.
+
+```php
+$attributes = ['title' => 'Hello'];
+
+$result = $columns->processReading($attributes);
+
+// Result:
+[
+    'title' => 'Hello',
+    'name'  => 'Hello', // alias added
+]
+```
+
+Aliases always mirror the processed raw values.  
+Aliases are only added when their raw column exists.  
+If the raw key is missing, the alias is silently omitted without error.
+
+### Writing (alias to raw)
+
+Aliases are ignored by default because values provided under alias names are not part of the validated column schema.  
+This prevents external input (e.g. `$repo->create(['alias' => 'Hello'])`) from bypassing the raw column's validation and write-rules.
+
+```php
+$columns = $columns->withAliases(['name' => 'title'], readonly: true);
+
+$result = $columns->processWriting(['name' => 'Hello'], 'create');
+
+// Result:
+[]
+```
+
+No raw value is written. Alias writes are removed before parent processing.
+
+### Writing (write-through mode)
+
+Enable write-through aliasing explicitly:
+
+```php
+$columns = $columns->withAliases(['name' => 'title'], readonly: false);
+
+$result = $columns->processWriting(['name' => 'Hello'], 'create');
+
+// Result:
+[
+    'title' => 'Hello',
+]
+```
+
+Alias writes are rewritten to their raw column names.
+
+### Column Resolution
+
+Alias names resolve to their raw column definitions:
+
+```php
+$columns->get('name'); // returns the 'title' column
+$columns->get('title'); // same column
 ```
 
 ## Translations
