@@ -213,6 +213,8 @@ trait StorageMethods
     {
         $translatableColumns = $this->columns->translatable()->column('name');
         
+        $where = $this->columns->mayModifyWhere($where);
+        
         foreach($where as $column => $value) {
             if (!is_string($column) && is_array($value)) {
                 $boolean = $this->extractFirstBooleanFromWhereColumns($value);
@@ -454,6 +456,8 @@ trait StorageMethods
      */
     protected function applyOrderBy(StorageInterface $storage, array $orderBy): StorageInterface
     {
+        $orderBy = $this->columns->mayModifyOrderBy($orderBy);
+        
         foreach($orderBy as $column => $value) {
             if (is_array($value)) {
                 foreach($value as $v) {

@@ -122,6 +122,12 @@ trait ReadMethods
         $query = $this->applyWhere($query, $where);
         $query = $this->applyOrderBy($query, $orderBy);
         $query = $this->applyLimit($query, $limit);
+        $column = $this->columns->mayModifyColumn($column);
+        
+        if (is_string($key)) {
+            $key = $this->columns->mayModifyColumn($key);
+        }
+        
         return $query->column($column, $key)->all();
     }
     
