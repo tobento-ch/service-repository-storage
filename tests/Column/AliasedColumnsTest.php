@@ -189,6 +189,19 @@ class AliasedColumnsTest extends TestCase
         $this->assertSame('value', $result['aliasFoo']);
     }
     
+    public function testProcessReadingMethodAddsJsonPathAliasValues()
+    {
+        $columns = new AliasedColumns(
+            new Column\Json('options'),
+        )->withAliases(['aliasColor' => 'options->color']);
+
+        $result = $columns->processReading([
+            'options' => ['color' => 'blue']
+        ]);
+
+        $this->assertSame('blue', $result['aliasColor']);
+    }
+
     public function testProcessWritingMethod()
     {
         $columns = new AliasedColumns(
@@ -313,6 +326,22 @@ class AliasedColumnsTest extends TestCase
         // raw is NOT written
         $this->assertArrayNotHasKey('foo', $result);
     }
+    
+    public function testProcessWritingMethodRewritesJsonPathAliasToRaw()
+    {
+        $columns = new AliasedColumns(
+            new Column\Json('options'),
+        )->withAliases(['product_color' => 'options->color'], readonly: false);
+
+        $result = $columns->processWriting(['product_color' => 'blue'], 'create');
+
+        // JSON structure created
+        $this->assertArrayHasKey('options', $result);
+        $this->assertSame('blue', $result['options']['color']);
+
+        // alias removed
+        $this->assertArrayNotHasKey('product_color', $result);
+    }
 
     public function testGetIteratorMethod()
     {
@@ -340,6 +369,29 @@ class AliasedColumnsTest extends TestCase
         $new = $columns->withAliases(['display_name' => 'title']);
 
         $this->assertSame(['display_name' => 'title'], $new->aliases());
+    }
+
+    public function testWithAliasesKeepsJsonPathAlias()
+    {
+        $columns = new AliasedColumns(
+            new Column\Json('options'),
+            new Column\Text('title'),
+        );
+
+        $new = $columns->withAliases(['product_color' => 'options->color']);
+
+        $this->assertSame(['product_color' => 'options->color'], $new->aliases());
+    }
+
+    public function testWithAliasesRemovesJsonPathAliasIfBaseColumnMissing()
+    {
+        $columns = new AliasedColumns(
+            new Column\Text('title'),
+        );
+
+        $new = $columns->withAliases(['product_color' => 'options->color']);
+
+        $this->assertSame([], $new->aliases());
     }
 
     public function testWithAliasesIgnoresAliasCollidingWithRawColumn()
