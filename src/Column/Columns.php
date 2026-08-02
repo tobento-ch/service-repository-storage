@@ -221,6 +221,44 @@ class Columns implements ColumnsInterface
     }
     
     /**
+     * Allows modifying the where conditions before applying them.
+     *
+     * @param array $where The original where conditions.
+     * @return array The modified where conditions.
+     */
+    public function mayModifyWhere(array $where): array
+    {
+        return $where;
+    }
+
+    /**
+     * Allows modifying the order-by definitions before applying them.
+     *
+     * @param array $orderBy The original order-by definitions.
+     * @return array The modified order-by definitions.
+     */
+    public function mayModifyOrderBy(array $orderBy): array
+    {
+        return $orderBy;
+    }
+    
+    /**
+     * Allows modifying a single column name before it is used
+     * for column extraction (e.g. in findColumn).
+     *
+     * This is used to resolve alias names to their underlying
+     * raw column names, including JSON path columns such as
+     * "options->color".
+     *
+     * @param string $column The original column name.
+     * @return string The modified (raw) column name.
+     */
+    public function mayModifyColumn(string $column): string
+    {
+        return $column;
+    }
+    
+    /**
      * Get iterator.
      *
      * @return Traversable<string, ColumnInterface>
