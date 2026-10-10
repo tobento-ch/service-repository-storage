@@ -165,6 +165,37 @@ class ArrayTranslationsTest extends TestCase
         );
     }
     
+    public function testLocaleMethod()
+    {
+        $translations = new ArrayTranslations(
+            translations: ['en' => ['color' => 'red'], 'de' => ['color' => 'rot']],
+            locale: 'en',
+        );
+
+        $this->assertSame('en', $translations->locale());
+    }
+
+    public function testLocaleFallbacksMethod()
+    {
+        $translations = new ArrayTranslations(
+            translations: ['en' => ['color' => 'red'], 'de' => ['color' => 'rot']],
+            locale: 'en',
+            localeFallbacks: ['de' => 'en'],
+        );
+
+        $this->assertSame(['de' => 'en'], $translations->localeFallbacks());
+    }
+
+    public function testLocaleFallbacksMethodReturnsEmptyArrayByDefault()
+    {
+        $translations = new ArrayTranslations(
+            translations: ['en' => ['color' => 'red'], 'de' => ['color' => 'rot']],
+            locale: 'en',
+        );
+
+        $this->assertSame([], $translations->localeFallbacks());
+    }
+    
     public function testToStringMethod()
     {
         $translations = new ArrayTranslations(
