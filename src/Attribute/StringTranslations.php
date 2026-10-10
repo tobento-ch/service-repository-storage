@@ -81,6 +81,26 @@ final class StringTranslations implements Arrayable, Jsonable, Stringable, Itera
     }
     
     /**
+     * Returns the locale.
+     *
+     * @return string
+     */
+    public function locale(): string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * Returns the locale fallbacks.
+     *
+     * @return array<string, string>
+     */
+    public function localeFallbacks(): array
+    {
+        return $this->localeFallbacks;
+    }
+    
+    /**
      * To String.
      *
      * @return string
