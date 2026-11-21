@@ -79,6 +79,49 @@ class TranslatableTest extends TestCase
         $this->assertSame(['en' => ['color' => 'red']], $column->reading(value: ['en' => ['color' => 'red']], attributes: [])->all());
     }
     
+    public function testReadingNullOrEmptyStringOnNullableColumnReturnsEmptyTranslations()
+    {
+        $column = new Column\Translatable(name: 'name')->type(nullable: true);
+        
+        $this->assertInstanceof(StringTranslations::class, $column->reading(value: null, attributes: []));
+        $this->assertSame([], $column->reading(value: null, attributes: [])->all());
+        $this->assertSame([], $column->reading(value: '', attributes: [])->all());
+        $this->assertSame('', $column->reading(value: null, attributes: [])->get());
+    }
+    
+    public function testReadingNullOrEmptyStringOnNullableColumnWithArraySubtypeReturnsEmptyTranslations()
+    {
+        $column = new Column\Translatable(name: 'name', subtype: 'array')->type(nullable: true);
+        
+        $this->assertInstanceof(ArrayTranslations::class, $column->reading(value: null, attributes: []));
+        $this->assertSame([], $column->reading(value: null, attributes: [])->all());
+        $this->assertSame([], $column->reading(value: '', attributes: [])->all());
+    }
+    
+    public function testReadingNullOrEmptyLocaleValueOnNullableColumnReturnsEmptyString()
+    {
+        $column = new Column\Translatable(name: 'name')->type(nullable: true);
+        
+        $this->assertSame(['en' => ''], $column->reading(value: ['en' => null], attributes: [])->all());
+        $this->assertSame(['en' => ''], $column->reading(value: ['en' => ''], attributes: [])->all());
+    }
+    
+    public function testReadingNullLocaleValueOnNullableColumnWithArraySubtypeReturnsEmptyArray()
+    {
+        $column = new Column\Translatable(name: 'name', subtype: 'array')->type(nullable: true);
+        
+        $this->assertSame(['en' => []], $column->reading(value: ['en' => null], attributes: [])->all());
+    }
+    
+    public function testReadingNullLocaleValueOnNullableColumnPassesStringToReader()
+    {
+        $reader = fn (string $value, array $attributes, string $locale): string => strtoupper($value);
+        
+        $column = new Column\Translatable(name: 'name')->type(nullable: true)->read($reader);
+        
+        $this->assertSame(['en' => ''], $column->reading(value: ['en' => null], attributes: [])->all());
+    }
+    
     public function testWritingMethod()
     {
         $column = new Column\Translatable(name: 'name');
