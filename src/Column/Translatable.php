@@ -76,39 +76,63 @@ final class Translatable extends AbstractColumn implements LocalesAware
     {
         $value = $this->getType()->cast(value: $value, type: 'json', default: []);
         
+        // Nullable columns cast null to null, e.g. for records stored before
+        // the column was added, so it is read as no translations:
+        if (!is_array($value)) {
+            $value = [];
+        }
+        
+        $stringTranslations = [];
+        $arrayTranslations = [];
+        
         foreach($value as $locale => $val) {
             
-            if (!in_array($locale, $this->getLocales())) {
-                unset($value[$locale]);
+            if (!is_string($locale) || !in_array($locale, $this->getLocales())) {
                 continue;
             }
             
+            // Nullable columns cast null to null too, but a translation is never null:
             if ($this->subtype === 'string') {
                 $val = $this->getType()->cast(value: $val, type: 'string', default: '');
-            } else {
-                $val = $this->getType()->cast(value: $val, type: 'json', default: []);
+                $val = $this->readValue(is_string($val) ? $val : '', $attributes, $locale);
+                $stringTranslations[$locale] = is_string($val) ? $val : '';
+                continue;
             }
             
-            if (is_callable($this->reader)) {
-                $value[$locale] = ($this->reader)($val, $attributes, $locale);
-            } else {
-                $value[$locale] = $val;
-            }
+            $val = $this->getType()->cast(value: $val, type: 'json', default: []);
+            $arrayTranslations[$locale] = $this->readValue(is_array($val) ? $val : [], $attributes, $locale);
         }
         
         if ($this->subtype === 'string') {
             return new StringTranslations(
-                translations: $value,
+                translations: $stringTranslations,
                 locale: $this->getLocale(),
                 localeFallbacks: $this->getLocaleFallbacks(),
             );
         }
 
         return new ArrayTranslations(
-            translations: $value,
+            translations: $arrayTranslations,
             locale: $this->getLocale(),
             localeFallbacks: $this->getLocaleFallbacks(),
         );
+    }
+    
+    /**
+     * Returns the value read by the reader if any.
+     *
+     * @param mixed $value
+     * @param array $attributes
+     * @param string $locale
+     * @return mixed
+     */
+    private function readValue(mixed $value, array $attributes, string $locale): mixed
+    {
+        if (is_callable($this->reader)) {
+            return ($this->reader)($value, $attributes, $locale);
+        }
+        
+        return $value;
     }
     
     /**
